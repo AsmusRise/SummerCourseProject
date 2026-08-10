@@ -1,13 +1,4 @@
 function [] = MPExtendTree(vid, sto)
-% Extend the tree from the state with index vid toward the state sto
-% At each time, make a small step with magnitude params.distOneStep
-% Add each intermediate valid state to the tree data structure.
-% Stop as soon as an intermediate invalid state is encountered
-%   - You can check state validity by first setting the robot position and
-%   - then calling the function IsStateValid
-% Also stop if an intermediate state reaches the goal
-%   - You can check if robot has reached the goal by first setting the
-%   - robot position and then calling the function HasRobotReachedGoal
 
 global mp;
 global params;
@@ -15,12 +6,38 @@ global params;
 mp.sto = sto;
 mp.vidNear = mp.nodes(vid,:);
 
-% You can make use of the global variables params and mp to access the
-% necessary information
+currentVid = vid;
+currentState = mp.nodes(currentVid,:);
 
-% Add your code here ...
+while norm(sto - currentState) > 1e-10
+    direction = sto - currentState;
+    stepLength = min(params.distOneStep, norm(direction));
+    candidate = currentState + stepLength * direction / norm(direction);
 
+    params.robot = candidate;
 
+    if IsValidState() == 0
+        return
+    end
 
+    mp.nodes = [mp.nodes; candidate];
+    mp.parents = [mp.parents; currentVid];
+    mp.nchildren(currentVid) = mp.nchildren(currentVid) + 1;
+    mp.nchildren = [mp.nchildren; 0];
+
+    currentVid = size(mp.nodes, 1);
+    currentState = candidate;
+
+    if HasRobotReachedGoal()
+        mp.vidAtGoal = currentVid;
+        return
+    end
 end
 
+
+if mp.vidAtGoal >= 1
+    JointTrajectory = MPGetPath();
+    JointTrajectory_smooth = SmoothPath(JointTrajectory);
+    Draw(JointTrajectory_smooth);
+end
+end

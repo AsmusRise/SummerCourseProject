@@ -32,22 +32,31 @@ ParaInitialize(C_ini, C_goal, Obs);
 
 iter = 0;
 
-while mp.vidAtGoal <= 0
-
-% Implement the extension of the RRT algorithm inside while loop here ...
-
-    
+params.robot = C_ini;
+if HasRobotReachedGoal()
+    mp.vidAtGoal = 1;
 end
 
+while mp.vidAtGoal <= 0 && iter < params.maxiteration
+
+    % Use the actual goal occasionally; otherwise reaching it by pure
+    % random sampling in six dimensions is extremely unlikely.
+    if rand < 0.10
+        sto = C_goal;
+    else
+        sto = SampleState();
+    end
+
+    distances = vecnorm(mp.nodes - sto, 2, 2);
+    [~, vidNear] = min(distances);
+
+    MPExtendTree(vidNear, sto);
+    iter = iter + 1;
+end
 
 if mp.vidAtGoal >= 1
-    JointTrajectory  = MPGetPath();
+    JointTrajectory = MPGetPath();
     JointTrajectory_smooth = SmoothPath(JointTrajectory);
+    Draw(JointTrajectory_smooth);
 end
-
-
-Draw(JointTrajectory_smooth);
-
-
 end
-
