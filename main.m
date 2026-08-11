@@ -24,8 +24,13 @@ joint_angles=UR5Kinematics.inverse_kinematics(T_be, 0);
 
 %obstacle collision checking for the goal joint angles and pick one for the
 %rrt to find a path to
-
-C_goal = [0.3, -1.2, -0.9, -1.2, 1.0, 0]; % Hand-picked joint angles
-
-Obs = []; 
+Obstacles = all_obstacles.Obs; 
+for i = 1:size(ik_sols, 1)
+    P = ik_sols(i, :);   % current row = one joint solution
+    collision_flag=UR5_collision_checking_Obs(ur5_kin, P, Obstacles);
+    if collision_flag==0
+        C_goal=P;
+        break
+    end
+end
 [path, smooth_path] = MPExtendRRT(C_ini, C_goal, Obs);
