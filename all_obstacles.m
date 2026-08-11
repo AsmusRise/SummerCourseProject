@@ -1,3 +1,6 @@
+
+mm2m= 1e-3;
+%Obstacles = all_obstacles.Obs; 
 A = [242; 400; -30] * mm2m; %closest to corner
 B = [-493; 90; -34] * mm2m; %down at the bottom aswell
 C = [685; -707; -28] * mm2m; %corner but close to pillar
