@@ -1,4 +1,4 @@
-function [JointTrajectory, JointTrajectory_smooth] = MPExtendRRT(C_ini, C_goal, Obs)
+function [JointTrajectory, JointTrajectory_smooth] = AlexMPExtendRRT(C_ini, C_goal, Obs)
 % C_ini is the initial configuration of UR5 (dimensino: 1*6, unit: radian)
 % C_goal is the goal configuration of UR5 (dimensino: 1*6, unit: radian)
 % Obs represents all the capsule obstacles in the workspace (dimension: n*7)
@@ -25,19 +25,23 @@ JointTrajectory_smooth = [];
 % JointTrajectory_smooth is a matrix whose dimension is n * 6 (unit: radian)
 
 % 1. DEFINE OBSTACLES WITH A CLEAR CORRIDOR
-    Obs_workbench = [0, -1.0, -0.10, 0, 1.0, -0.10, 0.10];
+    Obs_workbench = [-0.6, 0.0, -0.05,  0.6, 0.0, -0.05,  0.05];
     
     theta = 22.5 * (pi / 180);
     R = [cos(theta), -sin(theta); sin(theta), cos(theta)];
+
+    cube = 0.05;
     
     % Spread the pillars slightly wider apart so there's an easy path between them
-    physical_pillar1_xy = [0.4;  0.5]; 
-    physical_pillar2_xy = [0.4; -0.5];
+    physical_pillar1_xy = [6*cube;  -12*cube]; 
+    physical_pillar2_xy = [-6*cube; -12*cube];
     
-    robot_pillar1_xy = physical_pillar1_xy;
-    robot_pillar2_xy = physical_pillar2_xy;
+    robot_pillar1_xy = R * physical_pillar1_xy;
+    robot_pillar2_xy = R * physical_pillar2_xy;
+
+    safetymargin = 0.02;
     
-    pillar_radius = 0.04; % Made them slightly thinner (4cm) to give more breathing room
+    pillar_radius = 1*cube + safetymargin; % Made them slightly thinner (4cm) to give more breathing room
     Obs_pillar1 = [robot_pillar1_xy(1), robot_pillar1_xy(2), 0, robot_pillar1_xy(1), robot_pillar1_xy(2), 1.0, pillar_radius];
     Obs_pillar2 = [robot_pillar2_xy(1), robot_pillar2_xy(2), 0, robot_pillar2_xy(1), robot_pillar2_xy(2), 1.0, pillar_radius];
 

@@ -1,7 +1,8 @@
 clear; clc; close all;
 
-C_ini = [0, -1.5, 0, -1.5, 0, 0];
-C_goal = [0.3, -1.2, -0.9, -1.2, 1.0, 0]; % Hand-picked joint angles
+C_ini = [-1.1781, -1.57, -1.57, -1.57, 1.57, 0];
+C_goal = [-1.08, -2.09, -1.32, -1.29, 1.55, 0.2]; % Hand-picked joint angles
 
 Obs = []; 
-[path, smooth_path] = MPExtendRRT(C_ini, C_goal, Obs);
+[path, smooth_path] = AlexMPExtendRRT(C_ini, C_goal, Obs);
+
