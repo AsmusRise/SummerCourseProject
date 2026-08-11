@@ -31,6 +31,7 @@ MPInitialize(C_ini);
 ParaInitialize(C_ini, C_goal, Obs);
 
 iter = 0;
+goalBias = 0.10;
 
 params.robot = C_ini;
 if HasRobotReachedGoal()
@@ -41,7 +42,7 @@ while mp.vidAtGoal <= 0 && iter < params.maxiteration
 
     % Use the actual goal occasionally; otherwise reaching it by pure
     % random sampling in six dimensions is extremely unlikely.
-    if rand < 0.10
+    if rand < goalBias
         sto = C_goal;
     else
         sto = SampleState();
@@ -52,11 +53,18 @@ while mp.vidAtGoal <= 0 && iter < params.maxiteration
 
     MPExtendTree(vidNear, sto);
     iter = iter + 1;
+
+    if mod(iter, 200) == 0
+        fprintf('RRT iteration %d: nodes=%d, goalReached=%d\n', iter, size(mp.nodes, 1), mp.vidAtGoal);
+    end
 end
 
 if mp.vidAtGoal >= 1
     JointTrajectory = MPGetPath();
     JointTrajectory_smooth = SmoothPath(JointTrajectory);
     Draw(JointTrajectory_smooth);
+    fprintf('RRT succeeded after %d iterations with %d nodes.\n', iter, size(mp.nodes, 1));
+else
+    fprintf('RRT failed after %d iterations. Nodes grown: %d\n', iter, size(mp.nodes, 1));
 end
 end
