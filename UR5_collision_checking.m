@@ -12,7 +12,7 @@ collision_point = 0;
 threshhold_obs = 0.01;  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% UPdate the posture of UR5
+% Update the posture of UR5
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 result = ur5_kin.forward_kinematics(P);

@@ -22,9 +22,6 @@ T_be=[R Goal_cords_r; 0 0 0 1];
 %multiple join angles
 joint_angles=UR5Kinematics.inverse_kinematics(T_be, 0);
 
-%obstacle collision checking for the goal joint angles and pick one for the
-%rrt to find a path to
-
 C_goal = [0.3, -1.2, -0.9, -1.2, 1.0, 0]; % Hand-picked joint angles
 
 Obs = []; 
