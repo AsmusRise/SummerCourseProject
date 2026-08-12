@@ -12,11 +12,21 @@ addpath(genpath(projectFolder));
 
 % Same random result each time; remove/change this for a different path
 rng(1);
+%% Angles for chess pieces and drop off point
+%cp1 is left bottom corner
+C_cp1_up = [deg2rad(-11.76),deg2rad(-77.6), deg2rad(-121.7),deg2rad(-70.6),deg2rad(89.6),deg2rad(11)]; %the position when it needs to open its gripper
+C_cp1_down = [deg2rad(-11.68),deg2rad(-84.43), deg2rad(-133.36),deg2rad(-50.10),deg2rad(90.28),deg2rad(10.96)]; %position where it can pick it up.
+%cp2 is the bottom right corner piece
+C_cp2_up = [deg2rad(-102.66),deg2rad(-76.69), deg2rad(-115.63),deg2rad(-78.46),deg2rad(90.4),deg2rad(10.95)];
+C_cp2_down = [deg2rad(-102.72),deg2rad(-85.21), deg2rad(-135.75),deg2rad(-44.37),deg2rad(91.3),deg2rad(10.96)];
+%cp3 is the top right corner piece
+C_cp3_up = [deg2rad(-78.09),deg2rad(-141.93), deg2rad(-30.73),deg2rad(-96.23),deg2rad(89.12),deg2rad(11)];
+C_cp3_down = [deg2rad(-77.32),deg2rad(-145.15), deg2rad(-42.19),deg2rad(-83.39),deg2rad(89.71),deg2rad(10.95)];
+%drop off position
+C_dop = [deg2rad(-45.4),deg2rad(-128.73), deg2rad(-43.04),deg2rad(-83.4),deg2rad(91.96),deg2rad(1.51)];
 
 %% 1. Start and goal joint configurations (radians)
-%C_ini  = [+deg2rad(22.5),deg2rad(-130), deg2rad(-60), -pi/2, pi/2, pi/2];
 C_ini  = [-deg2rad(90), deg2rad(-45), deg2rad(-135), deg2rad(-90), deg2rad(90), deg2rad(-25)];
-%C_goal = [-deg2rad(90)+deg2rad(22.5), deg2rad(-130), deg2rad(-60), -pi/2, pi/2, pi/2];
 C_goal = [-deg2rad(61.98), deg2rad(-125.8), deg2rad(-78.96), deg2rad(-66.35), deg2rad(87.74), deg2rad(1.71)]; %picking up a chest piece
 
 %% 2. Obstacles
@@ -39,7 +49,16 @@ p2 = [605; -481; -23] * mm2m;
 p3 = [-175; -690; -28] * mm2m;
 p4 = [-144; -783; -30] * mm2m;
 
-b1 = [144; -482; -15] * mm2m; %bottle
+b1 = [177; -495.6; -15] * mm2m; %bottle
+
+%Chess pieces pickup coordinates:
+cp1 =  [347, -183.7, -15] * mm2m; % left bottom
+cp2 = [-183, -346.5, -15] * mm2m; % right bottom
+cp3 = [72.7, -838.6, -15] * mm2m; % right top
+
+%drop off point
+dop =  [490, -628, 201] * mm2m;
+
 
 %floor % Create 10 points along edge A->B and 10 along C->D
 nPoints = 10;
