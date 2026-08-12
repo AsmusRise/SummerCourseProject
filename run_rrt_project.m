@@ -11,7 +11,7 @@ projectFolder = fileparts(mfilename('fullpath'));
 addpath(genpath(projectFolder));
 
 % Same random result each time; remove/change this for a different path
-rng(1);
+rng(9); %we need to increase this number each iterations of the tests, otherwise the results will be the same.
 showSimulation = 0;
 %% Angles for chess pieces and drop off point
 %cp1 is left bottom corner
@@ -160,17 +160,18 @@ Obs = [Obs;BoxDropOff;Floor];
 fprintf('Obstacle set uses %d capsule segments.\n', size(Obs, 1));
 global params
 params.showSimulation = showSimulation;
+params.logFile = nextIndexedLogFile(projectFolder, 'rrt_run_log_', '.txt');
 ParaInitialize(C_ini, C_goal, Obs)
 
-params.logFile = fullfile(projectFolder, 'rrt_run_log.txt');
-logResetFid = fopen(params.logFile, 'w');
-if logResetFid == -1
-    error('Could not reset the log file.');
+logInitFid = fopen(params.logFile, 'w');
+if logInitFid == -1
+    error('Could not create the log file.');
 end
-fprintf(logResetFid, 'UR5 RRT run log\n');
-fprintf(logResetFid, 'Run started: %s\n', datestr(now));
-fprintf(logResetFid, '---\n');
-fclose(logResetFid);
+fprintf(logInitFid, 'UR5 RRT run log\n');
+fprintf(logInitFid, 'Run started: %s\n', datestr(now));
+fprintf(logInitFid, 'Log file: %s\n', params.logFile);
+fprintf(logInitFid, '---\n');
+fclose(logInitFid);
 
 params.robot = C_ini;
 startWithinLimits = params.robot(1) >= params.Q1min && params.robot(1) <= params.Q1max && ...
@@ -320,3 +321,16 @@ save(fullfile(projectFolder, 'rrt_result.mat'), 'waypoints', 'Obs', 'allSmoothPa
 
 fprintf('\nDone.\n');
 fprintf('URScript file: %s\n', scriptFile);
+
+function logFile = nextIndexedLogFile(folderPath, baseName, extension)
+indexValue = 1;
+while true
+    candidateName = sprintf('%s%02d%s', baseName, indexValue, extension);
+    candidatePath = fullfile(folderPath, candidateName);
+    if ~exist(candidatePath, 'file')
+        logFile = candidatePath;
+        return;
+    end
+    indexValue = indexValue + 1;
+end
+end

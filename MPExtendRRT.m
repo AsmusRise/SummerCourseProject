@@ -27,6 +27,7 @@ JointTrajectory_smooth = [];
 
 
 
+planningTic = tic;
 MPInitialize(C_ini);
 ParaInitialize(C_ini, C_goal, Obs);
 
@@ -62,18 +63,20 @@ end
 if mp.vidAtGoal >= 1
     JointTrajectory = MPGetPath();
     JointTrajectory_smooth = SmoothPath(JointTrajectory);
+    planningSeconds = toc(planningTic);
     if isfield(params, 'showSimulation') && params.showSimulation == 1
         Draw(JointTrajectory_smooth);
     end
-    logRRTRun(C_ini, C_goal, iter, mp, JointTrajectory, JointTrajectory_smooth, true);
+    logRRTRun(C_ini, C_goal, iter, mp, JointTrajectory, JointTrajectory_smooth, true, planningSeconds);
     fprintf('RRT succeeded after %d iterations with %d nodes.\n', iter, size(mp.nodes, 1));
 else
-    logRRTRun(C_ini, C_goal, iter, mp, JointTrajectory, JointTrajectory_smooth, false);
+    planningSeconds = toc(planningTic);
+    logRRTRun(C_ini, C_goal, iter, mp, JointTrajectory, JointTrajectory_smooth, false, planningSeconds);
     fprintf('RRT failed after %d iterations. Nodes grown: %d\n', iter, size(mp.nodes, 1));
 end
 end
 
-function logRRTRun(C_ini, C_goal, iter, mp, JointTrajectory, JointTrajectory_smooth, successFlag)
+function logRRTRun(C_ini, C_goal, iter, mp, JointTrajectory, JointTrajectory_smooth, successFlag, planningSeconds)
 global params;
 
 if ~isfield(params, 'logFile') || isempty(params.logFile)
@@ -97,6 +100,7 @@ fprintf(logFid, 'Status: %s\n', ternary(successFlag, 'success', 'failure'));
 fprintf(logFid, 'Start: [%.6f %.6f %.6f %.6f %.6f %.6f]\n', C_ini);
 fprintf(logFid, 'Goal:  [%.6f %.6f %.6f %.6f %.6f %.6f]\n', C_goal);
 fprintf(logFid, 'Iterations: %d\n', iter);
+fprintf(logFid, 'Planning seconds: %.6f\n', planningSeconds);
 fprintf(logFid, 'Nodes: %d\n', size(mp.nodes, 1));
 fprintf(logFid, 'Raw path length: %d\n', size(JointTrajectory, 1));
 fprintf(logFid, 'Smoothed path length: %d\n', size(JointTrajectory_smooth, 1));
