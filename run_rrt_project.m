@@ -21,13 +21,13 @@ C_cp2_up = [deg2rad(-102.66),deg2rad(-76.69), deg2rad(-115.63),deg2rad(-78.46),d
 C_cp2_down = [deg2rad(-102.72),deg2rad(-85.21), deg2rad(-135.75),deg2rad(-44.37),deg2rad(91.3),deg2rad(10.96)];
 %cp3 is the top right corner piece
 C_cp3_up = [deg2rad(-78.09),deg2rad(-141.93), deg2rad(-30.73),deg2rad(-96.23),deg2rad(89.12),deg2rad(11)];
-C_cp3_down = [deg2rad(-77.32),deg2rad(-145.15), deg2rad(-42.19),deg2rad(-83.39),deg2rad(89.71),deg2rad(10.95)];
+C_cp3_down = [deg2rad(-81.27),deg2rad(-144.24), deg2rad(-42.88),deg2rad(-90.13),deg2rad(88.94),deg2rad(1.42)];
 %drop off position
 C_dop = [deg2rad(-45.4),deg2rad(-128.73), deg2rad(-43.04),deg2rad(-83.4),deg2rad(91.96),deg2rad(1.51)];
 
 %% 1. Start and goal joint configurations (radians)
-C_ini  = [-deg2rad(90), deg2rad(-45), deg2rad(-135), deg2rad(-90), deg2rad(90), deg2rad(-25)];
-C_goal = [-deg2rad(61.98), deg2rad(-125.8), deg2rad(-78.96), deg2rad(-66.35), deg2rad(87.74), deg2rad(1.71)]; %picking up a chest piece
+C_ini  = C_cp3_up;
+C_goal = C_cp2_up;
 
 %% 2. Obstacles
 % One row per capsule:
@@ -83,7 +83,7 @@ p4_t = R_ab * p4;
 % Use the robot-frame geometry for collision checking.
 edgeRadius = 0.02;
 pillarRadius = 0.03;
-bottleradius = 0.042;
+bottleradius = 0.04;
 
 
 
@@ -98,7 +98,7 @@ Obs = [
     p4(1), p4(2), p4(3), p4(1), p4(2), p4(3)+1, pillarRadius
 
     %bottle 
-    b1(1), b1(2),b1(3),b1(1), b1(2),b1(3)+0.3,bottleradius
+    b1(1), b1(2),b1(3),b1(1), b1(2),b1(3)+0.27,bottleradius
     
     ptsAB(1,1),ptsAB(1,2),ptsAB(1,3)-0.03, ptsCD(1,1), ptsCD(1,2), ptsCD(1,3)-0.03, edgeRadius
     ptsAB(2,1),ptsAB(2,2),ptsAB(2,3)-0.03, ptsCD(2,1), ptsCD(2,2), ptsCD(2,3)-0.03, edgeRadius
@@ -153,7 +153,7 @@ goalWithinLimits = params.robot(1) >= params.Q1min && params.robot(1) <= params.
     params.robot(5) >= params.Q5min && params.robot(5) <= params.Q5max && ...
     params.robot(6) >= params.Q6min && params.robot(6) <= params.Q6max;
 if ~goalWithinLimits
-    fprintf('Goal configuration violates joint limits: %s\n', mat2str(C_goal, 4));
+    fprintf('Goal configuration violates joint limits: %s\n', mat2str(rad2deg(C_goal), 4));
     error('Fix C_goal before planning.');
 end
 if IsValidState() == 0

@@ -28,14 +28,14 @@ params.ur5_kin      = UR5Kinematics();
 
 params.Q1min        = (-67.5 - 90) * pi / 180;
 params.Q1max        = (-67.5 + 90) * pi / 180;
-params.Q2min        = (-90 - 50) * pi / 180;
-params.Q2max        = (-90 + 50) * pi / 180;
-params.Q3min        = -135 * pi / 180;
+params.Q2min        = (-90 - 60) * pi / 180;
+params.Q2max        = (-90 + 60) * pi / 180;
+params.Q3min        = -137 * pi / 180;
 params.Q3max        = 90 * pi / 180;
-params.Q4min        = -90 * pi / 180;
-params.Q4max        = 90 * pi / 180;
+params.Q4min        = -100 * pi / 180;
+params.Q4max        = 100 * pi / 180;
 params.Q5min        = -90 * pi / 180;
-params.Q5max        = 90 * pi / 180;
+params.Q5max        = 92 * pi / 180;
 params.Q6min        = -90 * pi / 180;
 params.Q6max        = 90 * pi / 180;
 
