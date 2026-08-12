@@ -27,7 +27,7 @@ C_cp3_down = [deg2rad(-81.27),deg2rad(-144.24), deg2rad(-42.88),deg2rad(-90.13),
 C_dop = [deg2rad(-45.4),deg2rad(-128.73), deg2rad(-43.04),deg2rad(-83.4),deg2rad(91.96),deg2rad(1.51)];
 
 %% 1. Start and goal joint configurations (radians)
-C_ini  = C_cp3_up;
+C_ini  = C_cp1_up;
 C_goal = C_cp2_up;
 
 %% 2. Obstacles
@@ -132,6 +132,16 @@ fprintf('Obstacle set uses %d capsule segments.\n', size(Obs, 1));
 global params
 params.showSimulation = showSimulation;
 ParaInitialize(C_ini, C_goal, Obs)
+
+params.logFile = fullfile(projectFolder, 'rrt_run_log.txt');
+logResetFid = fopen(params.logFile, 'w');
+if logResetFid == -1
+    error('Could not reset the log file.');
+end
+fprintf(logResetFid, 'UR5 RRT run log\n');
+fprintf(logResetFid, 'Run started: %s\n', datestr(now));
+fprintf(logResetFid, '---\n');
+fclose(logResetFid);
 
 params.robot = C_ini;
 startWithinLimits = params.robot(1) >= params.Q1min && params.robot(1) <= params.Q1max && ...

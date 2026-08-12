@@ -65,8 +65,51 @@ if mp.vidAtGoal >= 1
     if isfield(params, 'showSimulation') && params.showSimulation == 1
         Draw(JointTrajectory_smooth);
     end
+    logRRTRun(C_ini, C_goal, iter, mp, JointTrajectory, JointTrajectory_smooth, true);
     fprintf('RRT succeeded after %d iterations with %d nodes.\n', iter, size(mp.nodes, 1));
 else
+    logRRTRun(C_ini, C_goal, iter, mp, JointTrajectory, JointTrajectory_smooth, false);
     fprintf('RRT failed after %d iterations. Nodes grown: %d\n', iter, size(mp.nodes, 1));
+end
+end
+
+function logRRTRun(C_ini, C_goal, iter, mp, JointTrajectory, JointTrajectory_smooth, successFlag)
+global params;
+
+if ~isfield(params, 'logFile') || isempty(params.logFile)
+    return;
+end
+
+logFid = fopen(params.logFile, 'a');
+if logFid == -1
+    warning('Could not append to log file: %s', params.logFile);
+    return;
+end
+
+if successFlag
+    moveJCount = size(JointTrajectory_smooth, 1);
+else
+    moveJCount = 0;
+end
+
+fprintf(logFid, 'Run finished: %s\n', datestr(now));
+fprintf(logFid, 'Status: %s\n', ternary(successFlag, 'success', 'failure'));
+fprintf(logFid, 'Start: [%.6f %.6f %.6f %.6f %.6f %.6f]\n', C_ini);
+fprintf(logFid, 'Goal:  [%.6f %.6f %.6f %.6f %.6f %.6f]\n', C_goal);
+fprintf(logFid, 'Iterations: %d\n', iter);
+fprintf(logFid, 'Nodes: %d\n', size(mp.nodes, 1));
+fprintf(logFid, 'Raw path length: %d\n', size(JointTrajectory, 1));
+fprintf(logFid, 'Smoothed path length: %d\n', size(JointTrajectory_smooth, 1));
+fprintf(logFid, 'moveJ count: %d\n', moveJCount);
+fprintf(logFid, 'Goal reached: %d\n', mp.vidAtGoal >= 1);
+fprintf(logFid, '---\n');
+fclose(logFid);
+end
+
+function out = ternary(condition, trueValue, falseValue)
+if condition
+    out = trueValue;
+else
+    out = falseValue;
 end
 end

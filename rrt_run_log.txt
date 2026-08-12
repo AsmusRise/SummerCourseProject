@@ -1,0 +1,14 @@
+UR5 RRT run log
+Run started: 12-Aug-2026 13:01:43
+---
+Run finished: 12-Aug-2026 13:03:00
+Status: success
+Start: [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Goal:  [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Iterations: 815
+Nodes: 6665
+Raw path length: 145
+Smoothed path length: 4
+moveJ count: 4
+Goal reached: 1
+---
