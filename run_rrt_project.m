@@ -24,7 +24,36 @@ C_cp2_down = [deg2rad(-102.72),deg2rad(-85.21), deg2rad(-135.75),deg2rad(-44.37)
 C_cp3_up = [deg2rad(-78.09),deg2rad(-141.93), deg2rad(-30.73),deg2rad(-96.23),deg2rad(89.12),deg2rad(11)];
 C_cp3_down = [deg2rad(-81.27),deg2rad(-144.24), deg2rad(-42.88),deg2rad(-90.13),deg2rad(88.94),deg2rad(1.42)];
 %drop off position
-C_dop = [deg2rad(-45.4),deg2rad(-128.73), deg2rad(-43.04),deg2rad(-83.4),deg2rad(91.96),deg2rad(1.51)];
+C_DOP = [deg2rad(-45.4),deg2rad(-128.73), deg2rad(-43.04),deg2rad(-83.4),deg2rad(91.96),deg2rad(1.51)];
+
+
+%%
+% The actual sequence:
+% Open gripper: gripper_move(50)
+%C_cp3_up
+%C_cp3_down
+%closes gripper big: gripper_move(23)
+%C_cp1_up
+%C_cp1_down
+% open gripper: gripper_move(50)
+%C_cp1_up
+%C_cp2_up
+%C_cp2_down
+% close gripper small: gripper_move(20)
+%C_DOP
+% open gripper: gripper_move(50)
+%C_cp1_up
+%C_cp1_down
+% close gripper big: gripper_move(23)
+%C_cp3_up
+%C_cp3_down
+% open gripper: gripper_move(50)
+%C_cp3_up
+%C_cp2_up
+%C_cp2_down
+% close gripper small: gripper_move(20)
+%C_DOP
+% open gripper: gripper_move(50)
 
 %% 1. Start and goal joint configurations (radians)
 C_ini  = C_cp1_up;
@@ -206,27 +235,96 @@ fprintf('Raw RRT path: %d configurations\n', size(path, 1));
 fprintf('Smoothed path: %d configurations\n', size(smoothPath, 1));
 fprintf('Goal error: %.4f rad\n', norm(smoothPath(end,:) - C_goal));
 
-%% 5. Save MATLAB result
-save(fullfile(projectFolder, 'rrt_result.mat'), ...
-    'C_ini', 'C_goal', 'Obs', 'path', 'smoothPath');
+%% 5. Export the smooth path as URScript
+sequence = {
+    openGripper, C_cp3_up, C_cp3_down, closeGripperBig;
+    C_cp1_up, C_cp1_down, openGripper;
+    C_cp1_up, C_cp2_up, C_cp2_down, closeGripperSmall;
+    C_DOP, openGripper;
+    C_cp1_down, closeGripperBig, C_cp3_up, C_cp3_down, openGripper;
+    C_cp3_up, C_cp2_up, C_cp2_down, closeGripperSmall, C_DOP, openGripper;
 
-%% 6. Export the smooth path as URScript
+};
+
+% The actual sequence:
+% Open gripper: gripper_move(50)
+%C_cp3_up
+%C_cp3_down
+%closes gripper big: gripper_move(23)
+%C_cp1_up
+%C_cp1_down
+% open gripper: gripper_move(50)
+%C_cp1_up
+%C_cp2_up
+%C_cp2_down
+% close gripper small: gripper_move(20)
+%C_DOP
+% open gripper: gripper_move(50)
+%C_cp1_up
+%C_cp1_down
+% close gripper big: gripper_move(23)
+%C_cp3_up
+%C_cp3_down
+% open gripper: gripper_move(50)
+%C_cp3_up
+%C_cp2_up
+%C_cp2_down
+% close gripper small: gripper_move(20)
+%C_DOP
+% open gripper: gripper_move(50)
+
+sequence = {
+    % First open gripper
+    C_cp3_up, C_cp3_down; % closes gripper big
+    C_cp1_up, C_cp1_down; % open gripper
+    C_cp1_up, C_cp2_up, C_cp2_down; %close gripper small
+    C_DOP; % open gripper
+    C_cp1_up, C_cp1_down; % close gripper big
+    C_cp3_up, C_cp3_down; % open gripper
+    C_cp3_up, C_cp2_up, C_cp2_down % close gripper small
+    C_DOP; % Then open
+};
+
+%% Gripper actions executed AFTER each segment reaches its goal
+gripperAfterSeg = {
+    'gripper_move(23)', ... % 1. Close big
+    'gripper_move(50)', ... % 2. Open
+    'gripper_move(20)', ... % 3. Close small
+    'gripper_move(50)', ... % 4. Open
+    'gripper_move(23)', ... % 5. Close big
+    'gripper_move(50)', ... % 6. Open
+    'gripper_move(20)', ... % 7. Close small
+    'gripper_move(50)'      % 8. Open
+};
+
+%% Script generation
 scriptFile = fullfile(projectFolder, 'rrt_trajectory.script');
 fid = fopen(scriptFile, 'w');
+allSmoothPaths = cell(size(sequence, 1), 1);
 
-if fid == -1
-    error('Could not create the URScript file.');
+% Initial gripper state
+fprintf(fid, 'gripper_move(50)\n');
+
+for seg = 1:size(sequence, 1)
+    C_ini  = sequence{seg, 1};
+    C_goal = sequence{seg, 2};
+    ParaInitialize(C_ini, C_goal, Obs);
+    
+    [~, smoothPath] = MPExtendRRT(C_ini, C_goal, Obs);
+    allSmoothPaths{seg} = smoothPath;
+    
+    % Write motion trajectory
+    for i = (1 + (seg > 1)):size(smoothPath, 1)
+        q = smoothPath(i, :);
+        fprintf(fid, 'movej([%.6e,%.6e,%.6e,%.6e,%.6e,%.6e],a=1.39,v=1.04)\n', q);
+    end
+    
+    % Call URScript gripper function right after move completes
+    fprintf(fid, '%s\n', gripperAfterSeg{seg});
 end
-
-for i = 1:size(smoothPath, 1)
-    q = smoothPath(i,:);
-    fprintf(fid, ...
-        'movej([%.6e,%.6e,%.6e,%.6e,%.6e,%.6e],a=1.39,v=1.04)\n', ...
-        q(1), q(2), q(3), q(4), q(5), q(6));
-end
-
 fclose(fid);
+%% 5. Save combined results
+save(fullfile(projectFolder, 'rrt_result.mat'), 'sequence', 'Obs', 'allSmoothPaths');
 
 fprintf('\nDone.\n');
-fprintf('MATLAB result: %s\n', fullfile(projectFolder, 'rrt_result.mat'));
 fprintf('URScript file: %s\n', scriptFile);

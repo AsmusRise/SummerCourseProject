@@ -85,11 +85,6 @@ cp1 =  [347, -183.7, -15] * mm2m; % left bottom
 cp2 = [-183, -346.5, -15] * mm2m; % right bottom
 cp3 = [72.7, -838.6, -15] * mm2m; % right top
 
-%boxCorners
-bA = [605.62, -488, 123] * mm2m;
-bB = [388.81, -568.84, 120.4] * mm2m;
-bC = [466,-773, 125] * mm2m;
-
 %drop off point
 dop =  [490, -628, 201] * mm2m;
 
@@ -116,14 +111,9 @@ p4_t = R_ab * p4;
 
 % Use the robot-frame geometry for collision checking.
 edgeRadius = 0.02;
-edgeRadius
 pillarRadius = 0.03;
-<<<<<<< HEAD
 bottleRadius = 0.04;
 bottleHeight = 0.27;
-=======
-bottleradius = 0.04;
->>>>>>> 8b402f3766e976c89624514468b7fa74834cdcc8
 
 
 
@@ -138,7 +128,6 @@ Obs = [
     p4(1), p4(2), p4(3), p4(1), p4(2), p4(3)+1, pillarRadius
 
     %bottle 
-<<<<<<< HEAD
     b1(1), b1(2),b1(3),b1(1), b1(2),b1(3)+bottleHeight,bottleRadius
     
     ptsAB(1,1),ptsAB(1,2),ptsAB(1,3)-0.03, ptsCD(1,1), ptsCD(1,2), ptsCD(1,3)-0.03, edgeRadius
@@ -153,27 +142,7 @@ Obs = [
     ptsAB(10,1),ptsAB(10,2),ptsAB(10,3)-0.03, ptsCD(10,1), ptsCD(10,2), ptsCD(10,3)-0.03, edgeRadius
 
 
-=======
-    b1(1), b1(2),b1(3),b1(1), b1(2),b1(3)+0.27,bottleradius
->>>>>>> 8b402f3766e976c89624514468b7fa74834cdcc8
 ];
-
-box = [
-    bA(1),  bA(2),  bA(3),  bB(1),  bB(2),  bB(3),  edgeRadius
-    ]
-
-floor = [ptsAB(1,1),ptsAB(1,2),ptsAB(1,3)-0.03, ptsCD(1,1), ptsCD(1,2), ptsCD(1,3)-0.03, edgeRadius
-    ptsAB(2,1),ptsAB(2,2),ptsAB(2,3)-0.03, ptsCD(2,1), ptsCD(2,2), ptsCD(2,3)-0.03, edgeRadius
-    ptsAB(3,1),ptsAB(3,2),ptsAB(3,3)-0.03, ptsCD(3,1), ptsCD(3,2), ptsCD(3,3)-0.03, edgeRadius
-    ptsAB(4,1),ptsAB(4,2),ptsAB(4,3)-0.03, ptsCD(4,1), ptsCD(4,2), ptsCD(4,3)-0.03, edgeRadius
-    ptsAB(5,1),ptsAB(5,2),ptsAB(5,3)-0.03, ptsCD(5,1), ptsCD(5,2), ptsCD(5,3)-0.03, edgeRadius
-    ptsAB(6,1),ptsAB(6,2),ptsAB(6,3)-0.03, ptsCD(6,1), ptsCD(6,2), ptsCD(6,3)-0.03, edgeRadius
-    ptsAB(7,1),ptsAB(7,2),ptsAB(7,3)-0.03, ptsCD(7,1), ptsCD(7,2), ptsCD(7,3)-0.03, edgeRadius
-    ptsAB(8,1),ptsAB(8,2),ptsAB(8,3)-0.03, ptsCD(8,1), ptsCD(8,2), ptsCD(8,3)-0.03, edgeRadius
-    ptsAB(9,1),ptsAB(9,2),ptsAB(9,3)-0.03, ptsCD(9,1), ptsCD(9,2), ptsCD(9,3)-0.03, edgeRadius
-    ptsAB(10,1),ptsAB(10,2),ptsAB(10,3)-0.03, ptsCD(10,1), ptsCD(10,2), ptsCD(10,3)-0.03, edgeRadius
-    ];
-Obs = [Obs;floor];
 
 
 fprintf('Obstacle set uses %d capsule segments.\n', size(Obs, 1));
@@ -244,28 +213,14 @@ fprintf('Smoothed path: %d configurations\n', size(smoothPath, 1));
 fprintf('Goal error: %.4f rad\n', norm(smoothPath(end,:) - C_goal));
 
 %% 5. Export the smooth path as URScript
-%% 1. Define motion sequence [Start, Goal]
 sequence = {
-    % --- Pick & Move Piece 3 to CP1 ---
-    openGripper, C_cp3_up,   C_cp3_down;   % OPEN gripper -> Lower to Piece 3
-    C_cp3_down, C_cp1_up;     % CLOSE gripper (big) -> Lift & move to CP1 top
-    C_cp1_up,   C_cp1_down;   % Lower to CP1 place point
-    
-    % --- Move to & Transport Piece 2 to Drop-off ---
-    C_cp1_down, C_cp2_up;     % OPEN gripper -> Move directly from CP1 place to CP2 top
-    C_cp2_up,   C_cp2_down;   % Lower to Piece 2
-    C_cp2_down, C_dop;        % CLOSE gripper (small) -> Lift & transport to Drop-off
-    
-    % --- Move to & Transport Piece 1 to CP3 ---
-    C_dop,      C_cp1_down;   % OPEN gripper -> Move directly from Drop-off to Piece 1
-    C_cp1_down, C_cp3_up;     % CLOSE gripper (big) -> Lift & move to CP3 top
-    C_cp3_up,   C_cp3_down;   % Lower to CP3 place point
-    
-    % --- Move to & Transport Piece 2 to Drop-off (Second Cycle) ---
-    C_cp3_down, C_cp2_up;     % OPEN gripper -> Move directly from CP3 place to CP2 top
-    C_cp2_up,   C_cp2_down;   % Lower to Piece 2
-    C_cp2_down, C_dop         % CLOSE gripper (small) -> Lift & transport to Drop-off
-                              % (OPEN gripper at Drop-off)
+    openGripper, C_cp3_up, C_cp3_down, closeGripperBig;
+    C_cp1_up, C_cp1_down, openGripper;
+    C_cp1_up, C_cp2_up, C_cp2_down, closeGripperSmall;
+    C_DOP, openGripper;
+    C_cp1_down, closeGripperBig, C_cp3_up, C_cp3_down, openGripper;
+    C_cp3_up, C_cp2_up, C_cp2_down, closeGripperSmall, C_DOP, openGripper;
+
 };
 
 % The actual sequence:
@@ -295,24 +250,54 @@ sequence = {
 %C_DOP
 % open gripper: gripper_move(50)
 
-%% 6. Plan paths and export into a single URScript file
+sequence = {
+    % First open gripper
+    C_cp3_up, C_cp3_down; % closes gripper big
+    C_cp1_up, C_cp1_down; % open gripper
+    C_cp1_up, C_cp2_up, C_cp2_down; %close gripper small
+    C_DOP; % open gripper
+    C_cp1_up, C_cp1_down; % close gripper big
+    C_cp3_up, C_cp3_down; % open gripper
+    C_cp3_up, C_cp2_up, C_cp2_down % close gripper small
+    C_DOP; % Then open
+};
+
+%% Gripper actions executed AFTER each segment reaches its goal
+gripperAfterSeg = {
+    'gripper_move(23)', ... % 1. Close big
+    'gripper_move(50)', ... % 2. Open
+    'gripper_move(20)', ... % 3. Close small
+    'gripper_move(50)', ... % 4. Open
+    'gripper_move(23)', ... % 5. Close big
+    'gripper_move(50)', ... % 6. Open
+    'gripper_move(20)', ... % 7. Close small
+    'gripper_move(50)'      % 8. Open
+};
+
+%% Script generation
 scriptFile = fullfile(projectFolder, 'rrt_trajectory.script');
 fid = fopen(scriptFile, 'w');
 allSmoothPaths = cell(size(sequence, 1), 1);
 
+% Initial gripper state
+fprintf(fid, 'gripper_move(50)\n');
+
 for seg = 1:size(sequence, 1)
-    C_ini = sequence{seg, 1};
+    C_ini  = sequence{seg, 1};
     C_goal = sequence{seg, 2};
     ParaInitialize(C_ini, C_goal, Obs);
     
     [~, smoothPath] = MPExtendRRT(C_ini, C_goal, Obs);
     allSmoothPaths{seg} = smoothPath;
     
-    % Skip point 1 on subsequent segments to avoid duplicate stop points
+    % Write motion trajectory
     for i = (1 + (seg > 1)):size(smoothPath, 1)
         q = smoothPath(i, :);
         fprintf(fid, 'movej([%.6e,%.6e,%.6e,%.6e,%.6e,%.6e],a=1.39,v=1.04)\n', q);
     end
+    
+    % Call URScript gripper function right after move completes
+    fprintf(fid, '%s\n', gripperAfterSeg{seg});
 end
 fclose(fid);
 %% 5. Save combined results
