@@ -77,7 +77,7 @@ function [JointTrajectory, status] = PotentialField(C_ini, C_goal, Obs)
             q = q + 0.05 * step * randn(1, 6);
             timeout_check=timeout_check+1;
             if timeout_check > 3
-                timeout_check=0;
+                status=0;
                 break;
 
             end
