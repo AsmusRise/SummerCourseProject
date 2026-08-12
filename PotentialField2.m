@@ -6,6 +6,7 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
     ParaInitialize(C_ini, C_goal, Obs);
     
     params.maxiteration = 15000; 
+    params.goaltolerance = 0.01;
     planningTic = tic;
     
     % Force initial and goal configurations to be 1x6 row vectors
@@ -155,7 +156,10 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
 
     % Check if path smoothing function exists; otherwise pass raw trajectory
     if goalReached
-        if exist('SmoothPath', 'file') == 2
+        if isempty(JointTrajectory) || norm(JointTrajectory(end,:) - C_goal) > 1e-9
+            JointTrajectory = [JointTrajectory; C_goal];
+        end
+        if isfield(params, 'useAPFSmoothing') && params.useAPFSmoothing == 1 && exist('SmoothPath', 'file') == 2
             JointTrajectory_smooth = SmoothPath(JointTrajectory);
         else
             JointTrajectory_smooth = JointTrajectory;

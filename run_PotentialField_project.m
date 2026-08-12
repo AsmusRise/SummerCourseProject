@@ -13,6 +13,7 @@ addpath(genpath(projectFolder));
 % Same random result each time; remove/change this for a different path
 rng(1);
 showSimulation = 0;
+useAPFSmoothing = 1;
 %% Angles for chess pieces and drop off point
 %cp1 is left bottom corner
 C_cp1_up = [deg2rad(-11.76),deg2rad(-77.6), deg2rad(-121.7),deg2rad(-70.6),deg2rad(89.6),deg2rad(11)]; %the position when it needs to open its gripper
@@ -160,6 +161,7 @@ Obs = [Obs;BoxDropOff;Floor];
 fprintf('Obstacle set uses %d capsule segments.\n', size(Obs, 1));
 global params
 params.showSimulation = showSimulation;
+params.useAPFSmoothing = useAPFSmoothing;
 params.logFile = nextIndexedLogFile(projectFolder, 'PotentialField_run_log_', '.txt');
 ParaInitialize(C_ini, C_goal, Obs)
 
@@ -273,6 +275,7 @@ waypoints = {
     C_cp3_down, 'gripper_move(23)';  % Move down -> Close big
     C_cp1_up,   '';                  % Retract to CP1 top
     C_cp1_down, 'gripper_move(50)';  % Move down -> Open
+    C_cp1_up,   '';  % Move down -> Open
     C_cp2_up,   '';                  % Move across to CP2 top
     C_cp2_down, 'gripper_move(20)';  % Move down -> Close small
     C_DOP,      'gripper_move(50)';  % Move to Drop-off -> Open
@@ -280,13 +283,15 @@ waypoints = {
     C_cp1_down, 'gripper_move(23)';  % Move down -> Close big
     C_cp3_up,   '';                  % Move to CP3 top
     C_cp3_down, 'gripper_move(50)';  % Move down -> Open
+    C_cp3_up, '';
     C_cp2_up,   '';                  % Move across to CP2 top
     C_cp2_down, 'gripper_move(20)';  % Move down -> Close small
     C_DOP,      'gripper_move(50)'   % Move to Drop-off -> Open
 };
 
 %% 3 & 6. Plan paths and export to URScript
-scriptFile = fullfile(projectFolder, 'PotentialField_trajectorytest1.script');
+
+scriptFile = fullfile(projectFolder, 'PotentialField_trajectory_test1.script');
 fid = fopen(scriptFile, 'w');
 allSmoothPaths = cell(size(waypoints, 1) - 1, 1);
 
