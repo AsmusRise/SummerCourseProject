@@ -69,7 +69,7 @@ while ok == 0
         break;
     end
 field_iterations=field_iterations+1;
-    if field_iterations > 15
+    if field_iterations > 50
         error('Potential field planner failed to find a valid path.1');
     end
   C_ini = C_ini + 0.05 * step * randn(1, 6);

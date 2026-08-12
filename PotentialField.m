@@ -12,7 +12,7 @@ function [JointTrajectory, status] = PotentialField(C_ini, C_goal, Obs)
     JointTrajectory = q;
 
     k_att = 1.0;
-    k_rep = 80;
+    k_rep = 2;
     d0    = 0.25;
     step  = 0.02;
 
