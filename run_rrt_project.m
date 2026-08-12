@@ -235,16 +235,7 @@ fprintf('Raw RRT path: %d configurations\n', size(path, 1));
 fprintf('Smoothed path: %d configurations\n', size(smoothPath, 1));
 fprintf('Goal error: %.4f rad\n', norm(smoothPath(end,:) - C_goal));
 
-%% 5. Export the smooth path as URScript
-sequence = {
-    openGripper, C_cp3_up, C_cp3_down, closeGripperBig;
-    C_cp1_up, C_cp1_down, openGripper;
-    C_cp1_up, C_cp2_up, C_cp2_down, closeGripperSmall;
-    C_DOP, openGripper;
-    C_cp1_down, closeGripperBig, C_cp3_up, C_cp3_down, openGripper;
-    C_cp3_up, C_cp2_up, C_cp2_down, closeGripperSmall, C_DOP, openGripper;
-
-};
+%% Sequence
 
 % The actual sequence:
 % Open gripper: gripper_move(50)
@@ -273,58 +264,59 @@ sequence = {
 %C_DOP
 % open gripper: gripper_move(50)
 
-sequence = {
-    % First open gripper
-    C_cp3_up, C_cp3_down; % closes gripper big
-    C_cp1_up, C_cp1_down; % open gripper
-    C_cp1_up, C_cp2_up, C_cp2_down; %close gripper small
-    C_DOP; % open gripper
-    C_cp1_up, C_cp1_down; % close gripper big
-    C_cp3_up, C_cp3_down; % open gripper
-    C_cp3_up, C_cp2_up, C_cp2_down % close gripper small
-    C_DOP; % Then open
+%% 1. Define continuous waypoints and gripper actions
+% Each waypoint flows directly into the next.
+waypoints = {
+    C_cp3_up,   'gripper_move(50)';  % Start position (Open gripper)
+    C_cp3_down, 'gripper_move(23)';  % Move down -> Close big
+    C_cp1_up,   '';                  % Retract to CP1 top
+    C_cp1_down, 'gripper_move(50)';  % Move down -> Open
+    C_cp2_up,   '';                  % Move across to CP2 top
+    C_cp2_down, 'gripper_move(20)';  % Move down -> Close small
+    C_DOP,      'gripper_move(50)';  % Move to Drop-off -> Open
+    C_cp1_up,   '';                  % Move to CP1 top
+    C_cp1_down, 'gripper_move(23)';  % Move down -> Close big
+    C_cp3_up,   '';                  % Move to CP3 top
+    C_cp3_down, 'gripper_move(50)';  % Move down -> Open
+    C_cp2_up,   '';                  % Move across to CP2 top
+    C_cp2_down, 'gripper_move(20)';  % Move down -> Close small
+    C_DOP,      'gripper_move(50)'   % Move to Drop-off -> Open
 };
 
-%% Gripper actions executed AFTER each segment reaches its goal
-gripperAfterSeg = {
-    'gripper_move(23)', ... % 1. Close big
-    'gripper_move(50)', ... % 2. Open
-    'gripper_move(20)', ... % 3. Close small
-    'gripper_move(50)', ... % 4. Open
-    'gripper_move(23)', ... % 5. Close big
-    'gripper_move(50)', ... % 6. Open
-    'gripper_move(20)', ... % 7. Close small
-    'gripper_move(50)'      % 8. Open
-};
-
-%% Script generation
+%% 3 & 6. Plan paths and export to URScript
 scriptFile = fullfile(projectFolder, 'rrt_trajectory.script');
 fid = fopen(scriptFile, 'w');
-allSmoothPaths = cell(size(sequence, 1), 1);
+allSmoothPaths = cell(size(waypoints, 1) - 1, 1);
 
-% Initial gripper state
-fprintf(fid, 'gripper_move(50)\n');
+% Execute initial gripper command at start position
+if ~isempty(waypoints{1, 2})
+    fprintf(fid, '%s\n', waypoints{1, 2});
+end
 
-for seg = 1:size(sequence, 1)
-    C_ini  = sequence{seg, 1};
-    C_goal = sequence{seg, 2};
+% Loop through continuous segments (1 -> 2, 2 -> 3, 3 -> 4, etc.)
+for i = 1:(size(waypoints, 1) - 1)
+    C_ini  = waypoints{i, 1};
+    C_goal = waypoints{i+1, 1};
+    
     ParaInitialize(C_ini, C_goal, Obs);
-    
     [~, smoothPath] = MPExtendRRT(C_ini, C_goal, Obs);
-    allSmoothPaths{seg} = smoothPath;
+    allSmoothPaths{i} = smoothPath;
     
-    % Write motion trajectory
-    for i = (1 + (seg > 1)):size(smoothPath, 1)
-        q = smoothPath(i, :);
+    % Export path points (skip first point on segment 2+ to prevent pauses)
+    for j = (1 + (i > 1)):size(smoothPath, 1)
+        q = smoothPath(j, :);
         fprintf(fid, 'movej([%.6e,%.6e,%.6e,%.6e,%.6e,%.6e],a=1.39,v=1.04)\n', q);
     end
     
-    % Call URScript gripper function right after move completes
-    fprintf(fid, '%s\n', gripperAfterSeg{seg});
+    % Execute gripper command upon reaching the goal waypoint
+    gripperCmd = waypoints{i+1, 2};
+    if ~isempty(gripperCmd)
+        fprintf(fid, '%s\n', gripperCmd);
+    end
 end
 fclose(fid);
 %% 5. Save combined results
-save(fullfile(projectFolder, 'rrt_result.mat'), 'sequence', 'Obs', 'allSmoothPaths');
+save(fullfile(projectFolder, 'rrt_result.mat'), 'waypoints', 'Obs', 'allSmoothPaths');
 
 fprintf('\nDone.\n');
 fprintf('URScript file: %s\n', scriptFile);
