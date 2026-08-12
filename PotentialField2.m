@@ -14,10 +14,10 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
     JointTrajectory_smooth = [];
     
     % Tuned parameters
-    k_att = 1.0;
+    k_att = 2.0;
     k_rep = 5.0;    
     d0    = 0.10; 
-    step  = 0.02;
+    step  = 0.01;
     
     % State Variables for Random Walk Recovery
     recovery_mode = false;

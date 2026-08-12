@@ -118,8 +118,8 @@ p4_t = R_ab * p4;
 % Use the robot-frame geometry for collision checking.
 edgeRadius = 0.02;
 
-pillarRadius = 0.03;
-pillarRadiusThick = 0.05;
+pillarRadius = 0.05;
+pillarRadiusThick = 0.07;
 bottleradius = 0.04;
 
 
@@ -162,7 +162,7 @@ global params
 params.showSimulation = showSimulation;
 ParaInitialize(C_ini, C_goal, Obs)
 
-params.logFile = fullfile(projectFolder, 'rrt_run_log.txt');
+params.logFile = fullfile(projectFolder, 'PotentialField_run_log.txt');
 logResetFid = fopen(params.logFile, 'w');
 if logResetFid == -1
     error('Could not reset the log file.');
@@ -284,7 +284,7 @@ waypoints = {
 };
 
 %% 3 & 6. Plan paths and export to URScript
-scriptFile = fullfile(projectFolder, 'PotentialField_trajectory.script');
+scriptFile = fullfile(projectFolder, 'PotentialField_trajectorytest1.script');
 fid = fopen(scriptFile, 'w');
 allSmoothPaths = cell(size(waypoints, 1) - 1, 1);
 
@@ -316,7 +316,7 @@ for i = 1:(size(waypoints, 1) - 1)
 end
 fclose(fid);
 %% 5. Save combined results
-save(fullfile(projectFolder, 'PotentialField_result.mat'), 'waypoints', 'Obs', 'allSmoothPaths');
+save(fullfile(projectFolder, 'PotentialFieldtest1_result.mat'), 'waypoints', 'Obs', 'allSmoothPaths');
 
 fprintf('\nDone.\n');
 fprintf('URScript file: %s\n', scriptFile);
