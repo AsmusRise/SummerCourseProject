@@ -160,15 +160,17 @@ Obs = [Obs;BoxDropOff;Floor];
 fprintf('Obstacle set uses %d capsule segments.\n', size(Obs, 1));
 global params
 params.showSimulation = showSimulation;
+params.logFile = nextIndexedLogFile(projectFolder, 'PotentialField_run_log_', '.txt');
 ParaInitialize(C_ini, C_goal, Obs)
 
 params.logFile = fullfile(projectFolder, 'PotentialField_run_log.txt');
 logResetFid = fopen(params.logFile, 'w');
 if logResetFid == -1
-    error('Could not reset the log file.');
+    error('Could not create the log file.');
 end
 fprintf(logResetFid, 'UR5 PotentialField run log\n');
 fprintf(logResetFid, 'Run started: %s\n', datestr(now));
+fprintf(logResetFid, 'Log file: %s\n', params.logFile);
 fprintf(logResetFid, '---\n');
 fclose(logResetFid);
 
@@ -320,3 +322,16 @@ save(fullfile(projectFolder, 'PotentialFieldtest1_result.mat'), 'waypoints', 'Ob
 
 fprintf('\nDone.\n');
 fprintf('URScript file: %s\n', scriptFile);
+
+function logFile = nextIndexedLogFile(folderPath, baseName, extension)
+indexValue = 1;
+while true
+    candidateName = sprintf('%s%02d%s', baseName, indexValue, extension);
+    candidatePath = fullfile(folderPath, candidateName);
+    if ~exist(candidatePath, 'file')
+        logFile = candidatePath;
+        return;
+    end
+    indexValue = indexValue + 1;
+end
+end
