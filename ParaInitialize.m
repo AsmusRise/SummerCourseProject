@@ -13,6 +13,11 @@ params.maxiteration = 10000;            % the maximum iterations number for the 
 params.smoothiters  = 200;              % the maximum iternation number for the post-processing in SmoothPath
 params.ur5_kin      = UR5Kinematics();
 
+params.PF_stepSize  = 0.05;            % gradient-descent step size
+params.PF_k_att     = 1.0;             % attractive force gain
+params.PF_k_rep     = 0.5;             % repulsive force gain
+params.PF_repRadius = 0.30;            % repulsive influence radius
+
 % Joint limits of all the six joints of UR5
 
 % Important: please start with these joint limits, if experiencing
