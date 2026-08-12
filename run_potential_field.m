@@ -62,29 +62,35 @@ Obs = [
 %% 3. Plan with potential field
 [traj, ok] = PotentialField(C_ini, C_goal, Obs);
 
+% Extract the last reached configuration
+q_last = traj(end, :);
+
 if ok ~= 1
-    error('Potential field planner failed to find a valid path.');
+    fprintf('\n---------------------------------------------------\n');
+    fprintf('WARNING: Potential field planner did NOT reach C_goal.\n');
+    fprintf('Planner stopped after %d iterations.\n', size(traj, 1));
+    fprintf('Last reached joint configuration (radians):\n');
+    fprintf('  [%.6f, %.6f, %.6f, %.6f, %.6f, %.6f]\n', q_last);
+    fprintf('Last reached joint configuration (degrees):\n');
+    fprintf('  [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]\n', rad2deg(q_last));
+    fprintf('---------------------------------------------------\n\n');
+else
+    fprintf('Successfully reached goal in %d configurations!\n', size(traj, 1));
 end
 
-fprintf('Planned trajectory length: %d configurations\n', size(traj, 1));
-
-%% 4. Animate the trajectory
+%% 4. Animate the partial/full trajectory
 Draw(traj);
 
-%% 5. Export as URScript
+%% 5. Export as URScript (Exports valid steps up to the failure point)
 scriptFile = fullfile(projectFolder, 'potential_field_trajectory.script');
 fid = fopen(scriptFile, 'w');
 if fid == -1
     error('Could not create script file.');
 end
-
 for i = 1:size(traj, 1)
     q = traj(i,:);
     fprintf(fid, 'movej([%.6f, %.6f, %.6f, %.6f, %.6f, %.6f], a=1.39, v=1.04)\n', ...
         q(1), q(2), q(3), q(4), q(5), q(6));
 end
-
 fclose(fid);
-
 fprintf('URScript file saved to: %s\n', scriptFile);
-fprintf('Load this file onto the UR5e controller to execute the trajectory.\n');
