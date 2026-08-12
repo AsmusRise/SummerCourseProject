@@ -1,0 +1,164 @@
+% Potential field planner tailored to this UR5 project.
+% Inputs: C_ini, C_goal, Obs
+% Output: JointTrajectory and success flag
+
+function [JointTrajectory, status] = PotentialField(C_ini, C_goal, Obs)
+
+    global params;
+    ParaInitialize(C_ini, C_goal, Obs);
+
+    params.maxiteration = 15000; 
+
+    % Force initial and goal configurations to be 1x6 row vectors
+    q = reshape(C_ini, 1, 6);
+    C_goal = reshape(C_goal, 1, 6);
+    JointTrajectory = q;
+
+    % Tuned parameters
+    k_att = 1.0;
+    k_rep = 5;    
+    d0    = 0.10; 
+    step  = 0.02;
+    
+    % State Variables for Random Walk Recovery
+    recovery_mode = false;
+    recovery_steps = 0;
+    recovery_dir = zeros(1, 6);
+    collision_fails = 0;
+    best_dist = inf;
+    stuck_iterations = 0;
+
+    for it = 1:params.maxiteration
+        params.robot = q;
+
+        if HasRobotReachedGoal()
+            status = 1;
+            return;
+        end
+
+        % Track progress
+        dist_to_goal = norm(C_goal - q);
+        if dist_to_goal < best_dist - 0.005
+            best_dist = dist_to_goal;
+            stuck_iterations = 0;
+        else
+            stuck_iterations = stuck_iterations + 1;
+        end
+
+        % Trigger recovery if stuck
+        if stuck_iterations > 50 || collision_fails > 3
+            recovery_mode = true;
+            recovery_steps = 50; 
+            rand_vec = randn(1, 6);
+            recovery_dir = rand_vec / norm(rand_vec); 
+            stuck_iterations = 0;
+            collision_fails = 0;
+        end
+
+        if recovery_mode
+            F = recovery_dir;
+            recovery_steps = recovery_steps - 1;
+            if recovery_steps <= 0
+                recovery_mode = false;
+            end
+        else
+            % 1. Attractive Force
+            F = k_att * (C_goal - q);
+
+            % 2. Forward Kinematics (Force outputs to 1x3 row vectors)
+            fk = params.ur5_kin.forward_kinematics(q);
+            p_ee = reshape(fk.transform_matrices.T6(1:3, 4), 1, 3);
+            p_elbow = reshape(fk.transform_matrices.T3(1:3, 4), 1, 3); 
+
+            % 3. Numerical Jacobians
+            delta_q = 1e-5;
+            J_v_ee = zeros(3, 6);
+            J_v_elbow = zeros(3, 6);
+            for j = 1:6
+                q_plus = q; 
+                q_plus(j) = q_plus(j) + delta_q;
+                fk_plus = params.ur5_kin.forward_kinematics(q_plus);
+                
+                % Force 1x3 row vectors
+                p_plus_ee = reshape(fk_plus.transform_matrices.T6(1:3, 4), 1, 3);
+                J_v_ee(:, j) = (p_plus_ee - p_ee)' / delta_q;
+                
+                p_plus_elbow = reshape(fk_plus.transform_matrices.T3(1:3, 4), 1, 3);
+                J_v_elbow(:, j) = (p_plus_elbow - p_elbow)' / delta_q;
+            end
+
+            % 4. Repulsive Force calculation
+            control_points = [p_ee; p_elbow];
+            F_rep_cart = zeros(2, 3); 
+
+            for pt_idx = 1:2
+                p_curr = control_points(pt_idx, :); % Guaranteed 1x3
+                
+                for i = 1:size(Obs, 1)
+                    % Force obstacles to 1x3 row vectors
+                    a = reshape(Obs(i, 1:3), 1, 3); 
+                    b = reshape(Obs(i, 4:6), 1, 3); 
+                    r = Obs(i,7);
+                    
+                    u = b - a; 
+                    uu = dot(u, u);
+                    if uu < 1e-12
+                        c = a; 
+                    else
+                        t = max(0, min(1, dot(p_curr-a, u) / uu)); 
+                        c = a + t * u; 
+                    end
+
+                    d = norm(p_curr - c) - r;
+                    if d < d0
+                        v = p_curr - c; 
+                        nv = norm(v);
+                        if nv < 1e-9; v = [1 0 0]; nv = 1; end
+                        
+                        d_safe = max(d, 0.01); 
+                        
+                        % Calculate force
+                        rep = k_rep * (1 / d_safe - 1 / d0) * (1 / d_safe^2) * (v / nv);
+                        
+                        % GNRON FIX: Multiply by distance to goal squared
+                        rep = rep * (dist_to_goal^2);
+                        
+                        F_rep_cart(pt_idx, :) = F_rep_cart(pt_idx, :) + rep; 
+                    end
+                end
+            end
+
+            % 5. Convert and combine
+            F_rep_joint_ee = (J_v_ee' * F_rep_cart(1, :)')'; 
+            F_rep_joint_elbow = (J_v_elbow' * F_rep_cart(2, :)')'; 
+            F = F + F_rep_joint_ee + F_rep_joint_elbow;
+            
+            nF = norm(F);
+            if nF > 1e-6
+                F = F / nF; 
+            end
+        end
+
+        % Apply the step
+        qnew = q + step * F;
+        qnew = min(max(qnew, [params.Q1min params.Q2min params.Q3min params.Q4min params.Q5min params.Q6min]), ...
+                             [params.Q1max params.Q2max params.Q3max params.Q4max params.Q5max params.Q6max]);
+
+        params.robot = qnew;
+        
+        if IsValidState()
+            q = qnew;
+            JointTrajectory = [JointTrajectory; q];
+            collision_fails = 0; 
+        else
+            collision_fails = collision_fails + 1;
+            
+            if recovery_mode
+                rand_vec = randn(1, 6);
+                recovery_dir = rand_vec / norm(rand_vec); 
+            end
+        end
+    end
+
+    status = 0; 
+    ends
