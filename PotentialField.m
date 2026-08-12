@@ -26,8 +26,9 @@ function [JointTrajectory, status] = PotentialField(C_ini, C_goal, Obs)
 
         F = k_att * (C_goal - q);
 
-        % Use the first three joints as a simplified workspace point.
-        p = q(1:3);
+        % Use the UR5 forward kinematics end-effector position in workspace.
+        fk = params.ur5_kin.forward_kinematics(q);
+        p = fk.transform_matrices.T6(1:3, 4).';
 
         for i = 1:size(Obs, 1)
             a = Obs(i,1:3);
