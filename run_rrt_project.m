@@ -12,6 +12,7 @@ addpath(genpath(projectFolder));
 
 % Same random result each time; remove/change this for a different path
 rng(1);
+showSimulation = 0;
 %% Angles for chess pieces and drop off point
 %cp1 is left bottom corner
 C_cp1_up = [deg2rad(-11.76),deg2rad(-77.6), deg2rad(-121.7),deg2rad(-70.6),deg2rad(89.6),deg2rad(11)]; %the position when it needs to open its gripper
@@ -129,6 +130,7 @@ Obs = [Obs;BoxDropOff;Floor];
 
 fprintf('Obstacle set uses %d capsule segments.\n', size(Obs, 1));
 global params
+params.showSimulation = showSimulation;
 ParaInitialize(C_ini, C_goal, Obs)
 
 params.robot = C_ini;

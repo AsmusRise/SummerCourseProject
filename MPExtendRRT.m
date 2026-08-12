@@ -62,7 +62,9 @@ end
 if mp.vidAtGoal >= 1
     JointTrajectory = MPGetPath();
     JointTrajectory_smooth = SmoothPath(JointTrajectory);
-    Draw(JointTrajectory_smooth);
+    if isfield(params, 'showSimulation') && params.showSimulation == 1
+        Draw(JointTrajectory_smooth);
+    end
     fprintf('RRT succeeded after %d iterations with %d nodes.\n', iter, size(mp.nodes, 1));
 else
     fprintf('RRT failed after %d iterations. Nodes grown: %d\n', iter, size(mp.nodes, 1));
