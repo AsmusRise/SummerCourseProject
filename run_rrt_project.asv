@@ -21,13 +21,13 @@ C_cp2_up = [deg2rad(-102.66),deg2rad(-76.69), deg2rad(-115.63),deg2rad(-78.46),d
 C_cp2_down = [deg2rad(-102.72),deg2rad(-85.21), deg2rad(-135.75),deg2rad(-44.37),deg2rad(91.3),deg2rad(10.96)];
 %cp3 is the top right corner piece
 C_cp3_up = [deg2rad(-78.09),deg2rad(-141.93), deg2rad(-30.73),deg2rad(-96.23),deg2rad(89.12),deg2rad(11)];
-C_cp3_down = [deg2rad(-77.32),deg2rad(-145.15), deg2rad(-42.19),deg2rad(-83.39),deg2rad(89.71),deg2rad(10.95)];
+C_cp3_down = [deg2rad(-81.27),deg2rad(-144.24), deg2rad(-42.88),deg2rad(-90.13),deg2rad(88.94),deg2rad(1.42)];
 %drop off position
 C_dop = [deg2rad(-45.4),deg2rad(-128.73), deg2rad(-43.04),deg2rad(-83.4),deg2rad(91.96),deg2rad(1.51)];
 
 %% 1. Start and goal joint configurations (radians)
 C_ini  = C_cp3_up;
-C_goal = C_cp3_down;
+C_goal = C_cp2_up;
 
 %% 2. Obstacles
 % One row per capsule:
@@ -56,6 +56,11 @@ cp1 =  [347, -183.7, -15] * mm2m; % left bottom
 cp2 = [-183, -346.5, -15] * mm2m; % right bottom
 cp3 = [72.7, -838.6, -15] * mm2m; % right top
 
+%boxCorners
+bA = [605.62, -488, 123] * mm2m;
+bB = [388.81, -568.84, 120.4] * mm2m;
+bC = [466,-773, 125] * mm2m;
+
 %drop off point
 dop =  [490, -628, 201] * mm2m;
 
@@ -82,8 +87,9 @@ p4_t = R_ab * p4;
 
 % Use the robot-frame geometry for collision checking.
 edgeRadius = 0.02;
+edgeRadius
 pillarRadius = 0.03;
-bottleradius = 0.042;
+bottleradius = 0.04;
 
 
 
@@ -98,21 +104,25 @@ Obs = [
     p4(1), p4(2), p4(3), p4(1), p4(2), p4(3)+1, pillarRadius
 
     %bottle 
-    b1(1), b1(2),b1(3),b1(1), b1(2),b1(3)+0.3,bottleradius
-    
-    ptsAB(1,1),ptsAB(1,2),ptsAB(1,3)-0.03, ptsCD(1,1), ptsCD(1,2), ptsCD(1,3)-0.03, edgeRadius
-    %ptsAB(2,1),ptsAB(2,2),ptsAB(2,3)-0.03, ptsCD(2,1), ptsCD(2,2), ptsCD(2,3)-0.03, edgeRadius
-    %ptsAB(3,1),ptsAB(3,2),ptsAB(3,3)-0.03, ptsCD(3,1), ptsCD(3,2), ptsCD(3,3)-0.03, edgeRadius
-    %ptsAB(4,1),ptsAB(4,2),ptsAB(4,3)-0.03, ptsCD(4,1), ptsCD(4,2), ptsCD(4,3)-0.03, edgeRadius
-    %ptsAB(5,1),ptsAB(5,2),ptsAB(5,3)-0.03, ptsCD(5,1), ptsCD(5,2), ptsCD(5,3)-0.03, edgeRadius
-    %ptsAB(6,1),ptsAB(6,2),ptsAB(6,3)-0.03, ptsCD(6,1), ptsCD(6,2), ptsCD(6,3)-0.03, edgeRadius
-    %ptsAB(7,1),ptsAB(7,2),ptsAB(7,3)-0.03, ptsCD(7,1), ptsCD(7,2), ptsCD(7,3)-0.03, edgeRadius
-    %ptsAB(8,1),ptsAB(8,2),ptsAB(8,3)-0.03, ptsCD(8,1), ptsCD(8,2), ptsCD(8,3)-0.03, edgeRadius
-    %ptsAB(9,1),ptsAB(9,2),ptsAB(9,3)-0.03, ptsCD(9,1), ptsCD(9,2), ptsCD(9,3)-0.03, edgeRadius
-    %ptsAB(10,1),ptsAB(10,2),ptsAB(10,3)-0.03, ptsCD(10,1), ptsCD(10,2), ptsCD(10,3)-0.03, edgeRadius
-
-
+    b1(1), b1(2),b1(3),b1(1), b1(2),b1(3)+0.27,bottleradius
 ];
+
+box = [
+    bA(1),  bA(2),  bA(3),  bB(1),  bB(2),  bB(3),  edgeRadius
+    ]
+
+floor = [ptsAB(1,1),ptsAB(1,2),ptsAB(1,3)-0.03, ptsCD(1,1), ptsCD(1,2), ptsCD(1,3)-0.03, edgeRadius
+    ptsAB(2,1),ptsAB(2,2),ptsAB(2,3)-0.03, ptsCD(2,1), ptsCD(2,2), ptsCD(2,3)-0.03, edgeRadius
+    ptsAB(3,1),ptsAB(3,2),ptsAB(3,3)-0.03, ptsCD(3,1), ptsCD(3,2), ptsCD(3,3)-0.03, edgeRadius
+    ptsAB(4,1),ptsAB(4,2),ptsAB(4,3)-0.03, ptsCD(4,1), ptsCD(4,2), ptsCD(4,3)-0.03, edgeRadius
+    ptsAB(5,1),ptsAB(5,2),ptsAB(5,3)-0.03, ptsCD(5,1), ptsCD(5,2), ptsCD(5,3)-0.03, edgeRadius
+    ptsAB(6,1),ptsAB(6,2),ptsAB(6,3)-0.03, ptsCD(6,1), ptsCD(6,2), ptsCD(6,3)-0.03, edgeRadius
+    ptsAB(7,1),ptsAB(7,2),ptsAB(7,3)-0.03, ptsCD(7,1), ptsCD(7,2), ptsCD(7,3)-0.03, edgeRadius
+    ptsAB(8,1),ptsAB(8,2),ptsAB(8,3)-0.03, ptsCD(8,1), ptsCD(8,2), ptsCD(8,3)-0.03, edgeRadius
+    ptsAB(9,1),ptsAB(9,2),ptsAB(9,3)-0.03, ptsCD(9,1), ptsCD(9,2), ptsCD(9,3)-0.03, edgeRadius
+    ptsAB(10,1),ptsAB(10,2),ptsAB(10,3)-0.03, ptsCD(10,1), ptsCD(10,2), ptsCD(10,3)-0.03, edgeRadius
+    ];
+Obs = [Obs;floor];
 
 
 fprintf('Obstacle set uses %d capsule segments.\n', size(Obs, 1));
