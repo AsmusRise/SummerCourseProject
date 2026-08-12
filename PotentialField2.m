@@ -6,6 +6,7 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
     ParaInitialize(C_ini, C_goal, Obs);
     
     params.maxiteration = 15000; 
+    planningTic = tic;
     
     % Force initial and goal configurations to be 1x6 row vectors
     q = reshape(C_ini, 1, 6);
@@ -27,6 +28,7 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
     best_dist = inf;
     stuck_iterations = 0;
     goalReached = false;
+    recovery_activations = 0;
 
     for it = 1:params.maxiteration
         params.robot = q;
@@ -52,6 +54,7 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
             recovery_dir = rand_vec / norm(rand_vec); 
             stuck_iterations = 0;
             collision_fails = 0;
+            recovery_activations = recovery_activations + 1;
         end
         
         if recovery_mode
@@ -157,13 +160,17 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
         else
             JointTrajectory_smooth = JointTrajectory;
         end
+        planningSeconds = toc(planningTic);
     else
         JointTrajectory = [];
         JointTrajectory_smooth = [];
+        planningSeconds = toc(planningTic);
     end
+
+    logAPFRun(C_ini, C_goal, it, JointTrajectory, JointTrajectory_smooth, goalReached, planningSeconds, recovery_activations, best_dist, collision_fails);
 end
 
-function logAPFRun(C_ini, C_goal, iter, JointTrajectory, JointTrajectory_smooth, successFlag)
+function logAPFRun(C_ini, C_goal, iter, JointTrajectory, JointTrajectory_smooth, successFlag, planningSeconds, recoveryActivations, bestDist, collisionFails)
 global params;
 if ~isfield(params, 'logFile') || isempty(params.logFile)
     return;
@@ -183,11 +190,14 @@ fprintf(logFid, 'Status: %s\n', ternary(successFlag, 'success', 'failure'));
 fprintf(logFid, 'Start: [%.6f %.6f %.6f %.6f %.6f %.6f]\n', C_ini);
 fprintf(logFid, 'Goal:  [%.6f %.6f %.6f %.6f %.6f %.6f]\n', C_goal);
 fprintf(logFid, 'Iterations: %d\n', iter);
-fprintf(logFid, 'Nodes: %d\n', size(JointTrajectory, 1)); % Uses path point count instead of tree nodes
-fprintf(logFid, 'Raw path length: %d\n', size(JointTrajectory, 1));
-fprintf(logFid, 'Smoothed path length: %d\n', size(JointTrajectory_smooth, 1));
+fprintf(logFid, 'Planning seconds: %.6f\n', planningSeconds);
+fprintf(logFid, 'Path configurations: %d\n', size(JointTrajectory, 1));
+fprintf(logFid, 'Smoothed path configurations: %d\n', size(JointTrajectory_smooth, 1));
 fprintf(logFid, 'moveJ count: %d\n', moveJCount);
 fprintf(logFid, 'Goal reached: %d\n', successFlag);
+fprintf(logFid, 'Recovery activations: %d\n', recoveryActivations);
+fprintf(logFid, 'Best distance to goal: %.6f\n', bestDist);
+fprintf(logFid, 'Collision failures: %d\n', collisionFails);
 fprintf(logFid, '---\n');
 fclose(logFid);
 end
