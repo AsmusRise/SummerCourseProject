@@ -162,3 +162,40 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
         JointTrajectory_smooth = [];
     end
 end
+
+function logAPFRun(C_ini, C_goal, iter, JointTrajectory, JointTrajectory_smooth, successFlag)
+global params;
+if ~isfield(params, 'logFile') || isempty(params.logFile)
+    return;
+end
+logFid = fopen(params.logFile, 'a');
+if logFid == -1
+    warning('Could not append to log file: %s', params.logFile);
+    return;
+end
+if successFlag
+    moveJCount = size(JointTrajectory_smooth, 1);
+else
+    moveJCount = 0;
+end
+fprintf(logFid, 'Run finished: %s\n', datestr(now));
+fprintf(logFid, 'Status: %s\n', ternary(successFlag, 'success', 'failure'));
+fprintf(logFid, 'Start: [%.6f %.6f %.6f %.6f %.6f %.6f]\n', C_ini);
+fprintf(logFid, 'Goal:  [%.6f %.6f %.6f %.6f %.6f %.6f]\n', C_goal);
+fprintf(logFid, 'Iterations: %d\n', iter);
+fprintf(logFid, 'Nodes: %d\n', size(JointTrajectory, 1)); % Uses path point count instead of tree nodes
+fprintf(logFid, 'Raw path length: %d\n', size(JointTrajectory, 1));
+fprintf(logFid, 'Smoothed path length: %d\n', size(JointTrajectory_smooth, 1));
+fprintf(logFid, 'moveJ count: %d\n', moveJCount);
+fprintf(logFid, 'Goal reached: %d\n', successFlag);
+fprintf(logFid, '---\n');
+fclose(logFid);
+end
+
+function out = ternary(condition, trueValue, falseValue)
+if condition
+    out = trueValue;
+else
+    out = falseValue;
+end
+end
