@@ -59,13 +59,15 @@ for loop = 1:sim_num
 end
 
 
+% --- DRAW THE GOAL TARGET ---
+ur5_kin = UR5Kinematics();
+res = ur5_kin.forward_kinematics(C_goal);
+target_xyz = res.transform_matrices.T6(1:3,4);
+
+hold on;
+plot3(target_xyz(1), target_xyz(2), target_xyz(3), 'g*', 'MarkerSize', 25, 'LineWidth', 4);
+text(target_xyz(1), target_xyz(2), target_xyz(3) + 0.05, '  GOAL', 'Color', 'green', 'FontSize', 12, 'FontWeight', 'bold');
 end
-
-
-
-
-
-
 
 
 
