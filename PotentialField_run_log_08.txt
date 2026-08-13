@@ -1,0 +1,18 @@
+UR5 PotentialField run log
+Run started: 13-Aug-2026 12:35:30
+Log file: C:\Users\Asmus\Documents\MATLAB\Robotics Fundamentals\mini-project support codes (RRT)\mini-project support codes (RRT)\SummerCourseProject\PotentialField_run_log.txt
+---
+Run finished: 13-Aug-2026 12:37:25
+Status: failure
+Start: [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Goal:  [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Iterations: 15000
+Planning seconds: 115.292796
+Path configurations: 0
+Smoothed path configurations: 0
+moveJ count: 0
+Goal reached: 0
+Recovery activations: 314
+Best distance to goal: 0.936085
+Collision failures: 0
+---
