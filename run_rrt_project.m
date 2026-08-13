@@ -12,7 +12,7 @@ addpath(genpath(projectFolder));
 
 % Same random result each time; remove/change this for a different path
 rng(9); %we need to increase this number each iterations of the tests, otherwise the results will be the same.
-showSimulation = 0;
+showSimulation = 1; % 0 for no simulation.
 %% Angles for chess pieces and drop off point
 %cp1 is left bottom corner
 C_cp1_up = [deg2rad(-11.76),deg2rad(-77.6), deg2rad(-121.7),deg2rad(-70.6),deg2rad(89.6),deg2rad(11)]; %the position when it needs to open its gripper
@@ -26,44 +26,13 @@ C_cp3_down = [deg2rad(-81.27),deg2rad(-144.24), deg2rad(-42.88),deg2rad(-90.13),
 %drop off position
 C_DOP = [deg2rad(-45.4),deg2rad(-128.73), deg2rad(-43.04),deg2rad(-83.4),deg2rad(91.96),deg2rad(1.51)];
 
-
-%%
-% The actual sequence:
-% Open gripper: gripper_move(50)
-%C_cp3_up
-%C_cp3_down
-%closes gripper big: gripper_move(23)
-%C_cp1_up
-%C_cp1_down
-% open gripper: gripper_move(50)
-%C_cp1_up
-%C_cp2_up
-%C_cp2_down
-% close gripper small: gripper_move(20)
-%C_DOP
-% open gripper: gripper_move(50)
-%C_cp1_up
-%C_cp1_down
-% close gripper big: gripper_move(23)
-%C_cp3_up
-%C_cp3_down
-% open gripper: gripper_move(50)
-%C_cp3_up
-%C_cp2_up
-%C_cp2_down
-% close gripper small: gripper_move(20)
-%C_DOP
-% open gripper: gripper_move(50)
-
-%% 1. Start and goal joint configurations (radians)
+%% Start and goal joint configurations (radians)
 C_ini  = C_cp1_up;
 C_goal = C_cp2_up;
 
-%% 2. Obstacles
+%% Obstacles
 % One row per capsule:
 % [x_start y_start z_start  x_end y_end z_end  radius]
-%
-% Add more obstacles by adding more rows below.
 
 % Measurements are given in millimetres. Convert to meters for the planner.
 mm2m = 1e-3;
@@ -95,25 +64,10 @@ bC = [466,-773, 125] * mm2m;
 dop =  [490, -628, 201] * mm2m;
 
 
-%floor % Create 10 points along edge A->B and 10 along C->D
+% Create 10 points along edge A->B and 10 along C->D
 nPoints = 10;
 ptsAB = ( (1:nPoints)'/ (nPoints+1) ) .* (B - A)' + A'; % nPoints x 3
 ptsCD = ( (1:nPoints)'/ (nPoints+1) ) .* (D - C)' + C'; % nPoints x 3
-
-
-% Optional table-frame rotation from your notes.
-theta = 22.5 * (pi / 180);
-R_ab = [cos(theta) -sin(theta) 0; sin(theta) cos(theta) 0; 0 0 1];
-
-% Rotated coordinates in the table frame, kept here for reference.
-A_t = R_ab * A;
-B_t = R_ab * B;
-C_t = R_ab * C;
-D_t = R_ab * D;
-p1_t = R_ab * p1;
-p2_t = R_ab * p2;
-p3_t = R_ab * p3;
-p4_t = R_ab * p4;
 
 % Use the robot-frame geometry for collision checking.
 edgeRadius = 0.02;
@@ -223,7 +177,7 @@ for obsIdx = 1:size(Obs, 1)
             obsIdx, Obs(obsIdx,1), Obs(obsIdx,2), Obs(obsIdx,3), Obs(obsIdx,4), Obs(obsIdx,5), Obs(obsIdx,6), Obs(obsIdx,7));
     end
 end
-%% 3. Plan, smooth, and draw the motion
+%% Call MPExtendRRT for motion planning
 [path, smoothPath] = MPExtendRRT(C_ini, C_goal, Obs);
 
 %% 4. Check result
@@ -236,36 +190,7 @@ fprintf('Raw RRT path: %d configurations\n', size(path, 1));
 fprintf('Smoothed path: %d configurations\n', size(smoothPath, 1));
 fprintf('Goal error: %.4f rad\n', norm(smoothPath(end,:) - C_goal));
 
-%% Sequence
-
-% The actual sequence:
-% Open gripper: gripper_move(50)
-%C_cp3_up
-%C_cp3_down
-%closes gripper big: gripper_move(23)
-%C_cp1_up
-%C_cp1_down
-% open gripper: gripper_move(50)
-%C_cp1_up
-%C_cp2_up
-%C_cp2_down
-% close gripper small: gripper_move(20)
-%C_DOP
-% open gripper: gripper_move(50)
-%C_cp1_up
-%C_cp1_down
-% close gripper big: gripper_move(23)
-%C_cp3_up
-%C_cp3_down
-% open gripper: gripper_move(50)
-%C_cp3_up
-%C_cp2_up
-%C_cp2_down
-% close gripper small: gripper_move(20)
-%C_DOP
-% open gripper: gripper_move(50)
-
-%% 1. Define continuous waypoints and gripper actions
+%% Waypoints
 % Each waypoint flows directly into the next.
 waypoints = {
     C_cp3_up,   'gripper_move(50)';  % Start position (Open gripper)
@@ -284,7 +209,7 @@ waypoints = {
     C_DOP,      'gripper_move(50)'   % Move to Drop-off -> Open
 };
 
-%% 3 & 6. Plan paths and export to URScript
+%% Export to URScript
 scriptFile = fullfile(projectFolder, 'rrt_trajectory.script');
 fid = fopen(scriptFile, 'w');
 allSmoothPaths = cell(size(waypoints, 1) - 1, 1);
@@ -316,9 +241,7 @@ for i = 1:(size(waypoints, 1) - 1)
     end
 end
 fclose(fid);
-%% 5. Save combined results
-save(fullfile(projectFolder, 'rrt_result.mat'), 'waypoints', 'Obs', 'allSmoothPaths');
-
+%% Save
 fprintf('\nDone.\n');
 fprintf('URScript file: %s\n', scriptFile);
 
