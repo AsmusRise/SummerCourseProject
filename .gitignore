@@ -5,5 +5,4 @@ run_rrt_project.asv
 rrt_tree_projection.png
 *.mat
 *.asv
-*.txt
 *.script
