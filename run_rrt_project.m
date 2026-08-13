@@ -180,7 +180,7 @@ end
 %% Call MPExtendRRT for motion planning
 [path, smoothPath] = MPExtendRRT(C_ini, C_goal, Obs);
 
-%% 4. Check result
+%% Check result
 if isempty(path)
     error(['No collision-free path was found. ' ...
         'Try moving/reducing the obstacle or increasing maxiteration.']);
