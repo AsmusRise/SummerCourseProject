@@ -197,6 +197,8 @@ classdef UR5Display < handle
             [obj.v_wrist2, obj.f_wrist2, obj.n_wrist2, ~] = stlReadBinary(fullfile(mesh_base_dir, 'wrist2.stl'));
             [obj.v_wrist3, obj.f_wrist3, obj.n_wrist3, ~] = stlReadBinary(fullfile(mesh_base_dir, 'wrist3.stl'));
             [obj.v_tool, obj.f_tool, obj.n_tool, ~] = stlReadBinary(fullfile(mesh_base_dir, 'tool.stl'));
+     
+
 
             obj.ur5_kin = UR5Kinematics();
             obj.offset_1 = 0.135;
