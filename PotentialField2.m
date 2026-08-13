@@ -8,6 +8,7 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
     ParaInitialize(C_ini, C_goal, Obs);
     % Set limit of iterations to stop infinite loops when algorithm is stuck 
     params.maxiteration = 15000; 
+    planningTic = tic;
     
     % Force initial and goal states to 1x6 row matrix to be sure matrix math is correct later
     q = reshape(C_ini, 1, 6);
@@ -15,11 +16,13 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
     JointTrajectory = q;
     JointTrajectory_smooth = [];
     
+
     % tunning parameters 
-    k_att = 1.0; % Scaling factor for attractive potential pulling the robot to goal 
+    k_att = 2.0; % Scaling factor for attractive potential pulling the robot to goal 
     k_rep = 5.0; % scaling factor for repulsive potential pushing roobt away form obstacle 
     d0    = 0.10;% Range of infuence, if the robot is further than 10cm form obstacle repulsibe force is zero
-    step  = 0.02;% Step size for the discrete gradient solver
+    step  = 0.01;% Step size for the discrete gradient solver
+
     
     % State Variables for Random Walk Recovery esccaping the minima 
     recovery_mode = false;
@@ -29,6 +32,7 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
     best_dist = inf;
     stuck_iterations = 0;
     goalReached = false;
+    recovery_activations = 0;
 
 % Gradient Descent loop and recovery logic
 % Loop runs until the robot reaches goal or hit the limit of iterations
@@ -56,6 +60,7 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
             recovery_dir = rand_vec / norm(rand_vec); 
             stuck_iterations = 0;
             collision_fails = 0;
+            recovery_activations = recovery_activations + 1;
         end
         % Move in random direction for 50 setps ignoring standard potential forces
         if recovery_mode  
@@ -164,8 +169,52 @@ function [JointTrajectory, JointTrajectory_smooth] = PotentialField2(C_ini, C_go
         else
             JointTrajectory_smooth = JointTrajectory;
         end
+        planningSeconds = toc(planningTic);
     else
         JointTrajectory = [];
         JointTrajectory_smooth = [];
+        planningSeconds = toc(planningTic);
     end
+
+    logAPFRun(C_ini, C_goal, it, JointTrajectory, JointTrajectory_smooth, goalReached, planningSeconds, recovery_activations, best_dist, collision_fails);
+end
+
+function logAPFRun(C_ini, C_goal, iter, JointTrajectory, JointTrajectory_smooth, successFlag, planningSeconds, recoveryActivations, bestDist, collisionFails)
+global params;
+if ~isfield(params, 'logFile') || isempty(params.logFile)
+    return;
+end
+logFid = fopen(params.logFile, 'a');
+if logFid == -1
+    warning('Could not append to log file: %s', params.logFile);
+    return;
+end
+if successFlag
+    moveJCount = size(JointTrajectory_smooth, 1);
+else
+    moveJCount = 0;
+end
+fprintf(logFid, 'Run finished: %s\n', datestr(now));
+fprintf(logFid, 'Status: %s\n', ternary(successFlag, 'success', 'failure'));
+fprintf(logFid, 'Start: [%.6f %.6f %.6f %.6f %.6f %.6f]\n', C_ini);
+fprintf(logFid, 'Goal:  [%.6f %.6f %.6f %.6f %.6f %.6f]\n', C_goal);
+fprintf(logFid, 'Iterations: %d\n', iter);
+fprintf(logFid, 'Planning seconds: %.6f\n', planningSeconds);
+fprintf(logFid, 'Path configurations: %d\n', size(JointTrajectory, 1));
+fprintf(logFid, 'Smoothed path configurations: %d\n', size(JointTrajectory_smooth, 1));
+fprintf(logFid, 'moveJ count: %d\n', moveJCount);
+fprintf(logFid, 'Goal reached: %d\n', successFlag);
+fprintf(logFid, 'Recovery activations: %d\n', recoveryActivations);
+fprintf(logFid, 'Best distance to goal: %.6f\n', bestDist);
+fprintf(logFid, 'Collision failures: %d\n', collisionFails);
+fprintf(logFid, '---\n');
+fclose(logFid);
+end
+
+function out = ternary(condition, trueValue, falseValue)
+if condition
+    out = trueValue;
+else
+    out = falseValue;
+end
 end

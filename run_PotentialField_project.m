@@ -118,8 +118,8 @@ p4_t = R_ab * p4;
 % Use the robot-frame geometry for collision checking.
 edgeRadius = 0.02;
 
-pillarRadius = 0.03;
-pillarRadiusThick = 0.05;
+pillarRadius = 0.05;
+pillarRadiusThick = 0.07;
 bottleradius = 0.04;
 
 
@@ -160,15 +160,17 @@ Obs = [Obs;BoxDropOff;Floor];
 fprintf('Obstacle set uses %d capsule segments.\n', size(Obs, 1));
 global params
 params.showSimulation = showSimulation;
+params.logFile = nextIndexedLogFile(projectFolder, 'PotentialField_run_log_', '.txt');
 ParaInitialize(C_ini, C_goal, Obs)
 
-params.logFile = fullfile(projectFolder, 'rrt_run_log.txt');
+params.logFile = fullfile(projectFolder, 'PotentialField_run_log.txt');
 logResetFid = fopen(params.logFile, 'w');
 if logResetFid == -1
-    error('Could not reset the log file.');
+    error('Could not create the log file.');
 end
 fprintf(logResetFid, 'UR5 PotentialField run log\n');
 fprintf(logResetFid, 'Run started: %s\n', datestr(now));
+fprintf(logResetFid, 'Log file: %s\n', params.logFile);
 fprintf(logResetFid, '---\n');
 fclose(logResetFid);
 
@@ -284,7 +286,7 @@ waypoints = {
 };
 
 %% 3 & 6. Plan paths and export to URScript
-scriptFile = fullfile(projectFolder, 'PotentialField_trajectory.script');
+scriptFile = fullfile(projectFolder, 'PotentialField_trajectorytest1.script');
 fid = fopen(scriptFile, 'w');
 allSmoothPaths = cell(size(waypoints, 1) - 1, 1);
 
@@ -316,7 +318,20 @@ for i = 1:(size(waypoints, 1) - 1)
 end
 fclose(fid);
 %% 5. Save combined results
-save(fullfile(projectFolder, 'PotentialField_result.mat'), 'waypoints', 'Obs', 'allSmoothPaths');
+save(fullfile(projectFolder, 'PotentialFieldtest1_result.mat'), 'waypoints', 'Obs', 'allSmoothPaths');
 
 fprintf('\nDone.\n');
 fprintf('URScript file: %s\n', scriptFile);
+
+function logFile = nextIndexedLogFile(folderPath, baseName, extension)
+indexValue = 1;
+while true
+    candidateName = sprintf('%s%02d%s', baseName, indexValue, extension);
+    candidatePath = fullfile(folderPath, candidateName);
+    if ~exist(candidatePath, 'file')
+        logFile = candidatePath;
+        return;
+    end
+    indexValue = indexValue + 1;
+end
+end
