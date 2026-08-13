@@ -26,16 +26,16 @@ params.ur5_kin      = UR5Kinematics();
 % Self-collision is inplemented by the joint limits below, it is not
 % included in the collision checking functions, UR5_collision_checking and UR5_collision_checking_Obs
 
-params.Q1min        = - (90 - 22.5) * pi / 180;
-params.Q1max        = (22.5 + 90) * pi / 180;
-params.Q2min        = (-90 - 50) * pi / 180;
-params.Q2max        = (-90 + 50) * pi / 180;
-params.Q3min        = -90 * pi / 180;
+params.Q1min        = (-67.5 - 90) * pi / 180;
+params.Q1max        = (-67.5 + 90) * pi / 180;
+params.Q2min        = (-90 - 60) * pi / 180;
+params.Q2max        = (-90 + 60) * pi / 180;
+params.Q3min        = -137 * pi / 180;
 params.Q3max        = 90 * pi / 180;
-params.Q4min        = -90 * pi / 180;
-params.Q4max        = 90 * pi / 180;
+params.Q4min        = -100 * pi / 180;
+params.Q4max        = 100 * pi / 180;
 params.Q5min        = -90 * pi / 180;
-params.Q5max        = 90 * pi / 180;
+params.Q5max        = 92 * pi / 180;
 params.Q6min        = -90 * pi / 180;
 params.Q6max        = 90 * pi / 180;
 

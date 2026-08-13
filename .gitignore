@@ -1,1 +1,8 @@
 *.mex*
+rrt_result.mat
+rrt_run_log.txt
+run_rrt_project.asv
+rrt_tree_projection.png
+*.mat
+*.asv
+*.script

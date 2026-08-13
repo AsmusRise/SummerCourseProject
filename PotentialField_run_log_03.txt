@@ -1,0 +1,200 @@
+UR5 PotentialField run log
+Run started: 13-Aug-2026 10:18:01
+Log file: C:\Users\Asmus\Documents\MATLAB\Robotics Fundamentals\mini-project support codes (RRT)\mini-project support codes (RRT)\SummerCourseProject\PotentialField_run_log.txt
+---
+Run finished: 13-Aug-2026 10:18:18
+Status: success
+Start: [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Goal:  [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Iterations: 260
+Planning seconds: 16.430927
+Path configurations: 256
+Smoothed path configurations: 7
+moveJ count: 7
+Goal reached: 1
+Recovery activations: 2
+Best distance to goal: 0.051041
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:18:21
+Status: success
+Start: [-1.362928 -2.477146 -0.536340 -1.679530 1.555437 0.191986]
+Goal:  [-1.418429 -2.517463 -0.748397 -1.573065 1.552296 0.024784]
+Iterations: 26
+Planning seconds: 3.449777
+Path configurations: 26
+Smoothed path configurations: 2
+moveJ count: 2
+Goal reached: 1
+Recovery activations: 0
+Best distance to goal: 0.058288
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:18:48
+Status: success
+Start: [-1.418429 -2.517463 -0.748397 -1.573065 1.552296 0.024784]
+Goal:  [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Iterations: 273
+Planning seconds: 26.656661
+Path configurations: 265
+Smoothed path configurations: 35
+moveJ count: 35
+Goal reached: 1
+Recovery activations: 2
+Best distance to goal: 0.051884
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:18:53
+Status: success
+Start: [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Goal:  [-0.203854 -1.473581 -2.327571 -0.874410 1.575683 0.191288]
+Iterations: 39
+Planning seconds: 5.377991
+Path configurations: 39
+Smoothed path configurations: 2
+moveJ count: 2
+Goal reached: 1
+Recovery activations: 0
+Best distance to goal: 0.058700
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:19:07
+Status: success
+Start: [-0.203854 -1.473581 -2.327571 -0.874410 1.575683 0.191288]
+Goal:  [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Iterations: 249
+Planning seconds: 13.704989
+Path configurations: 229
+Smoothed path configurations: 4
+moveJ count: 4
+Goal reached: 1
+Recovery activations: 5
+Best distance to goal: 0.052314
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:19:17
+Status: success
+Start: [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Goal:  [-1.792802 -1.487195 -2.369284 -0.774403 1.593486 0.191288]
+Iterations: 67
+Planning seconds: 10.502021
+Path configurations: 67
+Smoothed path configurations: 2
+moveJ count: 2
+Goal reached: 1
+Recovery activations: 0
+Best distance to goal: 0.056879
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:19:54
+Status: success
+Start: [-1.792802 -1.487195 -2.369284 -0.774403 1.593486 0.191288]
+Goal:  [-0.792379 -2.246762 -0.751190 -1.455605 1.605005 0.026354]
+Iterations: 215
+Planning seconds: 36.453750
+Path configurations: 215
+Smoothed path configurations: 2
+moveJ count: 2
+Goal reached: 1
+Recovery activations: 0
+Best distance to goal: 0.055157
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:21:58
+Status: failure
+Start: [-0.792379 -2.246762 -0.751190 -1.455605 1.605005 0.026354]
+Goal:  [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Iterations: 15000
+Planning seconds: 123.755557
+Path configurations: 0
+Smoothed path configurations: 0
+moveJ count: 0
+Goal reached: 0
+Recovery activations: 309
+Best distance to goal: 0.776118
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:22:04
+Status: success
+Start: [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Goal:  [-0.203854 -1.473581 -2.327571 -0.874410 1.575683 0.191288]
+Iterations: 39
+Planning seconds: 6.186437
+Path configurations: 39
+Smoothed path configurations: 2
+moveJ count: 2
+Goal reached: 1
+Recovery activations: 0
+Best distance to goal: 0.058700
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:22:27
+Status: success
+Start: [-0.203854 -1.473581 -2.327571 -0.874410 1.575683 0.191288]
+Goal:  [-1.362928 -2.477146 -0.536340 -1.679530 1.555437 0.191986]
+Iterations: 638
+Planning seconds: 23.448557
+Path configurations: 602
+Smoothed path configurations: 4
+moveJ count: 4
+Goal reached: 1
+Recovery activations: 14
+Best distance to goal: 0.050671
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:22:31
+Status: success
+Start: [-1.362928 -2.477146 -0.536340 -1.679530 1.555437 0.191986]
+Goal:  [-1.418429 -2.517463 -0.748397 -1.573065 1.552296 0.024784]
+Iterations: 26
+Planning seconds: 3.936232
+Path configurations: 26
+Smoothed path configurations: 2
+moveJ count: 2
+Goal reached: 1
+Recovery activations: 0
+Best distance to goal: 0.058288
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:22:45
+Status: success
+Start: [-1.418429 -2.517463 -0.748397 -1.573065 1.552296 0.024784]
+Goal:  [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Iterations: 213
+Planning seconds: 14.164260
+Path configurations: 213
+Smoothed path configurations: 6
+moveJ count: 6
+Goal reached: 1
+Recovery activations: 0
+Best distance to goal: 0.050515
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:22:56
+Status: success
+Start: [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Goal:  [-1.792802 -1.487195 -2.369284 -0.774403 1.593486 0.191288]
+Iterations: 67
+Planning seconds: 10.414017
+Path configurations: 67
+Smoothed path configurations: 2
+moveJ count: 2
+Goal reached: 1
+Recovery activations: 0
+Best distance to goal: 0.056879
+Collision failures: 0
+---
+Run finished: 13-Aug-2026 10:23:31
+Status: success
+Start: [-1.792802 -1.487195 -2.369284 -0.774403 1.593486 0.191288]
+Goal:  [-0.792379 -2.246762 -0.751190 -1.455605 1.605005 0.026354]
+Iterations: 215
+Planning seconds: 34.770232
+Path configurations: 215
+Smoothed path configurations: 2
+moveJ count: 2
+Goal reached: 1
+Recovery activations: 0
+Best distance to goal: 0.055157
+Collision failures: 0
+---
