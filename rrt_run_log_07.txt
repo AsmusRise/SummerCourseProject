@@ -1,0 +1,172 @@
+UR5 RRT run log
+Run started: 12-Aug-2026 14:43:42
+Log file: C:\Users\Asmus\Documents\MATLAB\Robotics Fundamentals\mini-project support codes (RRT)\mini-project support codes (RRT)\SummerCourseProject\rrt_run_log_07.txt
+---
+Run finished: 12-Aug-2026 14:43:52
+Status: success
+Start: [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Goal:  [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Iterations: 160
+Planning seconds: 10.299813
+Nodes: 1541
+Raw path length: 157
+Smoothed path length: 5
+moveJ count: 5
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:43:53
+Status: success
+Start: [-1.362928 -2.477146 -0.536340 -1.679530 1.555437 0.191986]
+Goal:  [-1.418429 -2.517463 -0.748397 -1.573065 1.552296 0.024784]
+Iterations: 2
+Planning seconds: 1.255003
+Nodes: 40
+Raw path length: 4
+Smoothed path length: 2
+moveJ count: 2
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:44:03
+Status: success
+Start: [-1.418429 -2.517463 -0.748397 -1.573065 1.552296 0.024784]
+Goal:  [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Iterations: 24
+Planning seconds: 10.245545
+Nodes: 421
+Raw path length: 34
+Smoothed path length: 3
+moveJ count: 3
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:44:06
+Status: success
+Start: [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Goal:  [-0.203854 -1.473581 -2.327571 -0.874410 1.575683 0.191288]
+Iterations: 13
+Planning seconds: 2.329845
+Nodes: 235
+Raw path length: 5
+Smoothed path length: 2
+moveJ count: 2
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:44:33
+Status: success
+Start: [-0.203854 -1.473581 -2.327571 -0.874410 1.575683 0.191288]
+Goal:  [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Iterations: 995
+Planning seconds: 27.242562
+Nodes: 7835
+Raw path length: 100
+Smoothed path length: 3
+moveJ count: 3
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:44:37
+Status: success
+Start: [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Goal:  [-1.792802 -1.487195 -2.369284 -0.774403 1.593486 0.191288]
+Iterations: 9
+Planning seconds: 4.207842
+Nodes: 170
+Raw path length: 8
+Smoothed path length: 2
+moveJ count: 2
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:45:36
+Status: success
+Start: [-1.792802 -1.487195 -2.369284 -0.774403 1.593486 0.191288]
+Goal:  [-0.792379 -2.246762 -0.751190 -1.455605 1.605005 0.026354]
+Iterations: 2430
+Planning seconds: 58.438526
+Nodes: 16242
+Raw path length: 102
+Smoothed path length: 2
+moveJ count: 2
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:45:44
+Status: success
+Start: [-0.792379 -2.246762 -0.751190 -1.455605 1.605005 0.026354]
+Goal:  [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Iterations: 40
+Planning seconds: 8.285583
+Nodes: 598
+Raw path length: 23
+Smoothed path length: 3
+moveJ count: 3
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:45:46
+Status: success
+Start: [-0.205251 -1.354375 -2.124066 -1.232202 1.563815 0.191986]
+Goal:  [-0.203854 -1.473581 -2.327571 -0.874410 1.575683 0.191288]
+Iterations: 4
+Planning seconds: 2.117525
+Nodes: 94
+Raw path length: 5
+Smoothed path length: 2
+moveJ count: 2
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:45:58
+Status: success
+Start: [-0.203854 -1.473581 -2.327571 -0.874410 1.575683 0.191288]
+Goal:  [-1.362928 -2.477146 -0.536340 -1.679530 1.555437 0.191986]
+Iterations: 36
+Planning seconds: 12.322176
+Nodes: 589
+Raw path length: 107
+Smoothed path length: 5
+moveJ count: 5
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:46:00
+Status: success
+Start: [-1.362928 -2.477146 -0.536340 -1.679530 1.555437 0.191986]
+Goal:  [-1.418429 -2.517463 -0.748397 -1.573065 1.552296 0.024784]
+Iterations: 15
+Planning seconds: 1.847063
+Nodes: 236
+Raw path length: 4
+Smoothed path length: 2
+moveJ count: 2
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:46:40
+Status: success
+Start: [-1.418429 -2.517463 -0.748397 -1.573065 1.552296 0.024784]
+Goal:  [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Iterations: 1595
+Planning seconds: 39.918900
+Nodes: 11540
+Raw path length: 116
+Smoothed path length: 5
+moveJ count: 5
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:46:45
+Status: success
+Start: [-1.791755 -1.338493 -2.018124 -1.369385 1.577778 0.191114]
+Goal:  [-1.792802 -1.487195 -2.369284 -0.774403 1.593486 0.191288]
+Iterations: 8
+Planning seconds: 4.330559
+Nodes: 136
+Raw path length: 8
+Smoothed path length: 2
+moveJ count: 2
+Goal reached: 1
+---
+Run finished: 12-Aug-2026 14:47:29
+Status: success
+Start: [-1.792802 -1.487195 -2.369284 -0.774403 1.593486 0.191288]
+Goal:  [-0.792379 -2.246762 -0.751190 -1.455605 1.605005 0.026354]
+Iterations: 1513
+Planning seconds: 44.183342
+Nodes: 11228
+Raw path length: 87
+Smoothed path length: 2
+moveJ count: 2
+Goal reached: 1
+---
