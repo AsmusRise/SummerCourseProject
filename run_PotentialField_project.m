@@ -101,7 +101,7 @@ ptsAB = ( (1:nPoints)'/ (nPoints+1) ) .* (B - A)' + A'; % nPoints x 3
 ptsCD = ( (1:nPoints)'/ (nPoints+1) ) .* (D - C)' + C'; % nPoints x 3
 
 
-% Optional table-frame rotation from your notes.
+% Optional table-frame rotation
 theta = 22.5 * (pi / 180);
 R_ab = [cos(theta) -sin(theta) 0; sin(theta) cos(theta) 0; 0 0 1];
 
